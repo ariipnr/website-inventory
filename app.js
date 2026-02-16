@@ -17,7 +17,7 @@ function getQueryParam(name) {
 
 function requireAuth() {
   if (!getToken()) {
-    window.location.href = 'login.html?pesan=belum_login';
+    window.location.href = 'index.html?pesan=belum_login';
   }
 }
 
@@ -35,8 +35,8 @@ async function apiFetch(path, options = {}) {
   const res = await fetch(path, { ...options, headers });
   if (res.status === 401) {
     clearToken();
-    if (!window.location.pathname.endsWith('login.html')) {
-      window.location.href = 'login.html?pesan=belum_login';
+    if (!window.location.pathname.endsWith('index.html')) {
+      window.location.href = 'index.html?pesan=belum_login';
     }
   }
   return res;

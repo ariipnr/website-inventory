@@ -80,7 +80,7 @@
   <script src="app.js"></script>
   <script>
     if (window.app.getToken()) {
-      window.location.href = 'index.html';
+      window.location.href = 'dashboard.html';
     }
 
     const alertBox = document.getElementById('alertBox');
@@ -104,7 +104,7 @@
           body: JSON.stringify(payload)
         });
         window.app.setToken(data.token);
-        window.location.href = 'index.html';
+        window.location.href = 'dashboard.html';
       } catch (err) {
         alertBox.innerHTML = `<div class="alert alert-danger" role="alert">${err.message}</div>`;
       }
