@@ -27,6 +27,16 @@ body.login-page {
 	margin: 0;
 }
 
+body.landing-page {
+	font-family: "Sora", sans-serif;
+	background: radial-gradient(circle at 10% 15%, rgba(13, 59, 120, 0.18), transparent 42%),
+		radial-gradient(circle at 85% 20%, rgba(79, 209, 255, 0.22), transparent 46%),
+		linear-gradient(140deg, #f2f6ff 0%, #ffffff 55%, #f4f8ff 100%);
+	color: var(--neutral-700);
+	min-height: 100vh;
+	margin: 0;
+}
+
 img {
 	max-width: 100%;
 	display: block;
@@ -35,7 +45,7 @@ img {
 .ipb-topbar {
 	background: var(--ipb-blue-deep);
 	color: var(--neutral-0);
-	padding: 12px 6vw;
+	padding: 18px 6vw;
 	position: sticky;
 	top: 0;
 	z-index: 10;
@@ -49,14 +59,17 @@ img {
 	font-size: 0.95rem;
 }
 
-.ipb-badge {
-	border: 1px solid rgba(255, 255, 255, 0.2);
+.ipb-topbar__logo {
+	height: 46px;
+	width: auto;
+	display: block;
+	filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
+}
+
+.ipb-topbar__actions .btn {
 	border-radius: 999px;
-	padding: 6px 14px;
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
+	padding: 6px 18px;
 	font-weight: 600;
-	font-size: 0.75rem;
 }
 
 .login-shell {
@@ -67,41 +80,146 @@ img {
 	align-items: center;
 }
 
+.landing-shell {
+	padding: 70px 6vw 80px;
+}
+
+.landing-hero {
+	display: grid;
+	grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+	gap: 48px;
+	align-items: center;
+}
+
+.landing-hero__eyebrow {
+	text-transform: uppercase;
+	letter-spacing: 0.3em;
+	font-size: 0.7rem;
+	font-weight: 600;
+	color: var(--ipb-blue-soft);
+	margin-bottom: 10px;
+}
+
+.landing-hero__text h1 {
+	font-size: clamp(2.3rem, 3.6vw, 3.4rem);
+	font-weight: 700;
+	color: var(--ipb-blue-deep);
+	margin-bottom: 16px;
+}
+
+.landing-hero__desc {
+	font-size: 1.02rem;
+	line-height: 1.8;
+	color: rgba(23, 32, 55, 0.75);
+	max-width: 520px;
+}
+
+.landing-hero__cta {
+	display: flex;
+	gap: 14px;
+	margin-top: 26px;
+	flex-wrap: wrap;
+}
+
+.landing-hero__cta .btn {
+	border-radius: 14px;
+	padding: 12px 22px;
+	font-weight: 600;
+}
+
+.landing-hero__panel {
+	display: grid;
+	gap: 16px;
+}
+
+.landing-history {
+	margin-top: 60px;
+	display: grid;
+	grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+	gap: 32px;
+	align-items: center;
+}
+
+.landing-history__text h2 {
+	font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+	color: var(--ipb-blue-deep);
+	margin-bottom: 12px;
+}
+
+.landing-history__text p {
+	line-height: 1.8;
+	color: rgba(23, 32, 55, 0.75);
+}
+
+.landing-history__source a {
+	font-weight: 600;
+	color: var(--ipb-blue-soft);
+}
+
+.landing-history__media {
+	margin: 0;
+	background: var(--neutral-0);
+	border-radius: 18px;
+	box-shadow: var(--shadow-md);
+	overflow: hidden;
+	border: 1px solid rgba(13, 59, 120, 0.08);
+}
+
+.landing-history__media img {
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+.landing-history__media figcaption {
+	padding: 14px 16px;
+	font-size: 0.85rem;
+	color: rgba(23, 32, 55, 0.7);
+	background: var(--neutral-0);
+}
+
+.landing-card {
+	background: var(--neutral-0);
+	border-radius: 18px;
+	padding: 22px 22px;
+	box-shadow: var(--shadow-md);
+	border: 1px solid rgba(13, 59, 120, 0.08);
+}
+
+.landing-card h3 {
+	color: var(--ipb-blue-deep);
+	font-size: 1.2rem;
+	margin-bottom: 10px;
+}
+
+.landing-card--accent {
+	background: linear-gradient(135deg, rgba(13, 59, 120, 0.98), rgba(27, 91, 178, 0.95));
+	color: var(--neutral-0);
+}
+
+.landing-card--accent h3 {
+	color: var(--neutral-0);
+}
+
+.landing-card--accent .btn-light {
+	border-radius: 12px;
+	font-weight: 600;
+}
+
+.landing-list {
+	padding-left: 18px;
+	margin: 0;
+	color: rgba(23, 32, 55, 0.75);
+}
+
+.landing-list li {
+	margin-bottom: 8px;
+}
+
 .login-hero {
 	display: grid;
 	gap: 24px;
 	align-items: center;
-}
-
-.login-hero__logo {
-	position: relative;
-	width: 220px;
-	height: 220px;
-	margin-bottom: 12px;
-}
-
-.logo-ipb {
-	width: 160px;
-	height: auto;
-	position: absolute;
-	inset: 50%;
-	transform: translate(-50%, -50%);
-	filter: drop-shadow(0 16px 28px rgba(13, 59, 120, 0.35));
-}
-
-.logo-orbit {
-	position: absolute;
-	inset: 0;
-	border-radius: 50%;
-	background: conic-gradient(from 120deg, rgba(79, 209, 255, 0.3), rgba(13, 59, 120, 0.8), rgba(79, 209, 255, 0.3));
-	mask: radial-gradient(circle, transparent 55%, black 56%);
-	animation: orbit 10s linear infinite;
-}
-
-@keyframes orbit {
-	to {
-		transform: rotate(360deg);
-	}
 }
 
 .login-hero__text h1 {
@@ -145,13 +263,15 @@ img {
 .login-card {
 	background: var(--neutral-0);
 	border-radius: var(--radius-lg);
-	padding: 32px 30px;
+	padding: 32px 32px;
 	box-shadow: var(--shadow-lg);
 	border: 1px solid rgba(13, 59, 120, 0.08);
+	max-width: 440px;
+	margin-left: auto;
 }
 
 .login-card__header h2 {
-	font-size: 1.6rem;
+	font-size: 1.55rem;
 	font-weight: 700;
 	color: var(--ipb-blue-deep);
 	margin-bottom: 8px;
@@ -237,10 +357,6 @@ img {
 		gap: 32px;
 	}
 
-	.login-hero__logo {
-		margin: 0 auto 8px;
-	}
-
 	.login-hero__text {
 		text-align: center;
 	}
@@ -256,6 +372,19 @@ img {
 	.login-footer__copy {
 		text-align: left;
 	}
+
+	.landing-hero {
+		grid-template-columns: 1fr;
+		gap: 28px;
+	}
+
+	.landing-hero__panel {
+		max-width: 520px;
+	}
+
+	.landing-history {
+		grid-template-columns: 1fr;
+	}
 }
 
 @media (max-width: 600px) {
@@ -270,15 +399,17 @@ img {
 	}
 
 	.login-card {
-		padding: 26px 22px;
+		padding: 22px 20px;
+		max-width: 100%;
+		margin-left: 0;
 	}
 
-	.login-hero__logo {
-		width: 180px;
-		height: 180px;
+	.landing-shell {
+		padding: 48px 6vw 60px;
 	}
 
-	.logo-ipb {
-		width: 130px;
+	.landing-hero__cta .btn {
+		width: 100%;
 	}
+
 }

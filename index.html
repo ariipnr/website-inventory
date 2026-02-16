@@ -10,56 +10,67 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="login-page">
+<body class="landing-page">
   <header class="ipb-topbar">
     <div class="ipb-topbar__inner">
-      <span class="ipb-badge">IPB University</span>
-      <span class="ipb-topbar__meta">Sistem Inventaris Lab Komputer</span>
+      <img src="image/LogoIPB.png" alt="Logo IPB" class="ipb-topbar__logo">
+      <div class="ipb-topbar__actions">
+        <a href="login.html" class="btn btn-outline-light btn-sm">Login</a>
+      </div>
     </div>
   </header>
 
-  <main class="login-shell">
-    <section class="login-hero">
-      <div class="login-hero__logo">
-        <div class="logo-orbit" aria-hidden="true"></div>
-        <img src="image/LogoIPB.png" alt="Logo IPB" class="logo-ipb">
-      </div>
-      <div class="login-hero__text">
-        <p class="login-hero__eyebrow">Sekolah Vokasi</p>
+  <main class="landing-shell">
+    <section class="landing-hero">
+      <div class="landing-hero__text">
+        <p class="landing-hero__eyebrow">Sekolah Vokasi IPB</p>
         <h1>Inventaris Barang Lab Komputer</h1>
-        <p class="login-hero__desc">Kelola aset, peminjaman, dan pelacakan perangkat secara cepat dan tertata.</p>
-        <div class="login-hero__chips">
-          <span>Terintegrasi</span>
-          <span>Realtime</span>
-          <span>Terpercaya</span>
+        <p class="landing-hero__desc">
+          Kelola aset, peminjaman, dan pengembalian dengan cepat dan rapi. Sistem ini dibuat untuk
+          memudahkan pelacakan perangkat dan ketersediaan alat di laboratorium.
+        </p>
+        <div class="landing-hero__cta">
+          <a href="login.html" class="btn btn-primary btn-lg">Masuk Sistem</a>
+        </div>
+      </div>
+      <div class="landing-hero__panel">
+        <div class="landing-card">
+          <h3>Fitur Utama</h3>
+          <ul class="landing-list">
+            <li>Pencatatan barang otomatis dan terstruktur.</li>
+            <li>Peminjaman dan pengembalian realtime.</li>
+            <li>Rekap kategori dan visualisasi data.</li>
+          </ul>
+        </div>
+        <div class="landing-card landing-card--accent">
+          <h3>Butuh Akses?</h3>
+          <p>Masuk menggunakan akun admin untuk mengelola inventaris dan laporan.</p>
+          <a href="login.html" class="btn btn-light btn-block">Login Sekarang</a>
         </div>
       </div>
     </section>
 
-    <section class="login-card">
-      <div class="login-card__header">
-        <h2>Masuk ke Akun</h2>
-        <p>Gunakan kredensial admin untuk mengakses dashboard.</p>
+    <section class="landing-history">
+      <div class="landing-history__text">
+        <h2>Sejarah Singkat Sekolah Vokasi IPB</h2>
+        <p>
+          Pendidikan vokasi di IPB berawal pada tahun 1979 sebagai Program Diploma Institut Pertanian Bogor.
+          Seiring perkembangan kebutuhan pendidikan terapan, pada tahun 2017 program tersebut bertransformasi
+          menjadi Sekolah Vokasi IPB University.
+        </p>
+        <p class="landing-history__source">
+          Sumber resmi:
+          <a href="https://sv.ipb.ac.id/tentang/" target="_blank" rel="noopener">Sekolah Vokasi IPB</a>
+        </p>
       </div>
-      <form id="loginForm" class="login-form">
-        <div id="alertBox"></div>
-        <div class="form-group">
-          <label for="username">User</label>
-          <input id="username" type="text" name="username" class="form-control" placeholder="Username" autocomplete="username" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input id="password" type="password" name="password" class="form-control" placeholder="Password" autocomplete="current-password" required>
-        </div>
-        <div class="form-group form-check">
-          <input type="checkbox" class="form-check-input" id="dropdownCheck">
-          <label class="form-check-label" for="dropdownCheck">
-            Remember me
-          </label>
-        </div>
-        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
-        <a class="login-card__link" href="#">Forgot password?</a>
-      </form>
+      <figure class="landing-history__media">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/ef/Gedung_Sekolah_Bisnis_IPB.jpg" alt="Gedung IPB University di Bogor">
+        <figcaption>
+          Gedung di lingkungan IPB University. Foto:
+          <a href="https://commons.wikimedia.org/wiki/File:Gedung_Sekolah_Bisnis_IPB.jpg" target="_blank" rel="noopener">Sekolahbisnisipb</a>,
+          lisensi CC BY-SA 4.0.
+        </figcaption>
+      </figure>
     </section>
   </main>
 
@@ -75,40 +86,11 @@
     </div>
   </footer>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
   <script>
     if (window.app.getToken()) {
       window.location.href = 'dashboard.html';
     }
-
-    const alertBox = document.getElementById('alertBox');
-    const pesan = window.app.getQueryParam('pesan');
-    if (pesan === 'gagal') {
-      alertBox.innerHTML = '<div class="alert alert-danger" role="alert">Masukkan Username dan Password dengan Benar</div>';
-    } else if (pesan === 'logout') {
-      alertBox.innerHTML = '<div class="alert alert-secondary" role="alert">Anda Berhasil Logout!</div>';
-    } else if (pesan === 'belum_login') {
-      alertBox.innerHTML = '<div class="alert alert-warning" role="alert">Anda harus login untuk mengakses halaman admin</div>';
-    }
-
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      alertBox.innerHTML = '';
-      const formData = new FormData(e.target);
-      const payload = Object.fromEntries(formData.entries());
-      try {
-        const data = await window.app.apiJson('/api/login', {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-        window.app.setToken(data.token);
-        window.location.href = 'dashboard.html';
-      } catch (err) {
-        alertBox.innerHTML = `<div class="alert alert-danger" role="alert">${err.message}</div>`;
-      }
-    });
   </script>
 </body>
 </html>
