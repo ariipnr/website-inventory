@@ -3,6 +3,6 @@
   "private": true,
   "type": "commonjs",
   "dependencies": {
-    "mysql2": "^3.11.0"
+    "pg": "^8.12.0"
   }
 }

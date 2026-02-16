@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
     }
 
     const rows = await query(
-      'SELECT username FROM tbl_login WHERE username = ? AND password = ? LIMIT 1',
+      'SELECT username FROM tbl_login WHERE username = $1 AND password = $2 LIMIT 1',
       [username, password]
     );
 

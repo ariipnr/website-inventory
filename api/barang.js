@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
   try {
     if (req.method === 'GET') {
       if (id) {
-        const rows = await query('SELECT * FROM input_barang WHERE no = ? LIMIT 1', [id]);
+        const rows = await query('SELECT * FROM input_barang WHERE no = $1 LIMIT 1', [id]);
         return res.end(JSON.stringify(rows[0] || null));
       }
       const rows = await query('SELECT * FROM input_barang ORDER BY no DESC');
@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
       const { kd_alat, kategori, merek, nama_alat, spek, jml } = body;
 
       await query(
-        'INSERT INTO input_barang (kode_alat, kategori, merek, nama_alat, spesifikasi, jumlah) VALUES (?, ?, ?, ?, ?, ?)',
+        'INSERT INTO input_barang (kode_alat, kategori, merek, nama_alat, spesifikasi, jumlah) VALUES ($1, $2, $3, $4, $5, $6)',
         [kd_alat, kategori, merek, nama_alat, spek, jml]
       );
       return res.end(JSON.stringify({ ok: true }));
@@ -51,7 +51,7 @@ module.exports = async (req, res) => {
       const { kd_alat, kategori, merek, nama_alat, spek, jml } = body;
 
       await query(
-        'UPDATE input_barang SET kode_alat = ?, kategori = ?, merek = ?, nama_alat = ?, spesifikasi = ?, jumlah = ? WHERE no = ?',
+        'UPDATE input_barang SET kode_alat = $1, kategori = $2, merek = $3, nama_alat = $4, spesifikasi = $5, jumlah = $6 WHERE no = $7',
         [kd_alat, kategori, merek, nama_alat, spek, jml, id]
       );
       return res.end(JSON.stringify({ ok: true }));
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Missing id' }));
       }
-      await query('DELETE FROM input_barang WHERE no = ?', [id]);
+      await query('DELETE FROM input_barang WHERE no = $1', [id]);
       return res.end(JSON.stringify({ ok: true }));
     }
 

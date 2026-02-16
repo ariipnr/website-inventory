@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
       const { nim, nama, kode_alat, tgl_peminjaman } = body;
 
       await query(
-        'INSERT INTO tbl_peminjaman (nim, nama, kode_alat, tgl_peminjaman, status) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO tbl_peminjaman (nim, nama, kode_alat, tgl_peminjaman, status) VALUES ($1, $2, $3, $4, $5)',
         [nim, nama, kode_alat, tgl_peminjaman, 'Belum Kembali']
       );
       return res.end(JSON.stringify({ ok: true }));
@@ -53,7 +53,7 @@ module.exports = async (req, res) => {
       const newStatus = status || 'Kembali';
 
       await query(
-        'UPDATE tbl_peminjaman SET tgl_pengembalian = ?, status = ? WHERE no = ?',
+        'UPDATE tbl_peminjaman SET tgl_pengembalian = $1, status = $2 WHERE no = $3',
         [tgl_pengembalian, newStatus, id]
       );
       return res.end(JSON.stringify({ ok: true }));
@@ -64,7 +64,7 @@ module.exports = async (req, res) => {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Missing id' }));
       }
-      await query('DELETE FROM tbl_peminjaman WHERE no = ?', [id]);
+      await query('DELETE FROM tbl_peminjaman WHERE no = $1', [id]);
       return res.end(JSON.stringify({ ok: true }));
     }
 
