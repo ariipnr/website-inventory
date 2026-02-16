@@ -16,7 +16,12 @@ window.onscroll = function  () {
 	function waktu() {
 		var waktu = new Date();
 		setTimeout("waktu()", 1000);
-		document.getElementById("jam").innerHTML = waktu.getHours();
-		document.getElementById("menit").innerHTML = waktu.getMinutes();
-		document.getElementById("detik").innerHTML = waktu.getSeconds();
+		var jam = document.getElementById("jam");
+		var menit = document.getElementById("menit");
+		var detik = document.getElementById("detik");
+		if (jam && menit && detik) {
+			jam.innerHTML = waktu.getHours();
+			menit.innerHTML = waktu.getMinutes();
+			detik.innerHTML = waktu.getSeconds();
+		}
 	}

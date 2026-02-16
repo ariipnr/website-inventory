@@ -1,0 +1,15 @@
+{
+  "rewrites": [
+    { "source": "/index.php", "destination": "/index.html" },
+    { "source": "/login.php", "destination": "/login.html" },
+    { "source": "/data_barang.php", "destination": "/data_barang.html" },
+    { "source": "/input_barang.php", "destination": "/input_barang.html" },
+    { "source": "/edit_barang.php", "destination": "/edit_barang.html" },
+    { "source": "/pinjam_alat.php", "destination": "/pinjam_alat.html" },
+    { "source": "/kembalikan.php", "destination": "/kembalikan.html" },
+    { "source": "/chart.php", "destination": "/chart.html" },
+    { "source": "/generate_barcode.php", "destination": "/generate_barcode.html" },
+    { "source": "/delete.php", "destination": "/data_barang.html" },
+    { "source": "/hapus_pinjam.php", "destination": "/pinjam_alat.html" }
+  ]
+}

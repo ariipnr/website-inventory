@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inventaris Barang</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="container">
+    <section id="menu">
+      <nav class="navbar fixed-top navbar-light bg-dark sticky-top">
+        <ul>
+          <li><a href="index.html">Beranda</a></li>
+          <li><a href="data_barang.html">Data Barang</a></li>
+          <li><a href="input_barang.html">Input Barang</a></li>
+          <li><a href="pinjam_alat.html">Pinjam Alat</a></li>
+          <li><a href="tentang_kami.html">Tentang Kami</a></li>
+        </ul>
+        <a href="#" class="btn btn-white" onclick="window.app.logout()">Logout</a>
+      </nav>
+    </section>
+  </div>
+
+  <section class="navy" id="section1">
+    <div class="content">
+      <img align="left" src="image/LogoIPB.png" width="400px">
+      <h1 align="right">Inventaris Barang Lab Komputer</h1>
+      <p align="right">Inventaris Barang Lab Komputer Sekolah Vokasi Institut Pertanian Bogor</p>
+    </div>
+  </section>
+
+  <section class="white" id="section2"><br>
+    <h2 align="center">Form Edit Barang</h2><br>
+
+    <form id="editBarangForm">
+      <table width="500" align="center" border="0">
+        <td>
+          <input type="hidden" name="no" id="no">
+
+          <label for="basic-url">Kode Alat</label>
+          <div class="input-group mb-3">
+            <input type="text" name="kd_alat" id="kd_alat" class="form-control" placeholder="Kode Alat">
+          </div>
+
+          <label for="basic-url">Kategori</label>
+          <div class="input-group mb-3">
+            <select name="kategori" id="kategori" class="form-control" required>
+              <option value="Network Device">Network Device</option>
+              <option value="PC">PC</option>
+              <option value="Sparepart">Sparepart</option>
+              <option value="Printer">Printer</option>
+              <option value="Alat">Alat</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+          </div>
+
+          <label for="basic-url">Merek</label>
+          <div class="input-group mb-3">
+            <input type="text" name="merek" id="merek" class="form-control" placeholder="Merek">
+          </div>
+
+          <label for="basic-url">Nama Alat</label>
+          <div class="input-group mb-3">
+            <input type="text" name="nama_alat" id="nama_alat" class="form-control" placeholder="Nama Alat">
+          </div>
+
+          <label for="basic-url">Spesifikasi</label>
+          <div class="input-group">
+            <textarea class="form-control" cols="50" name="spek" id="spek" aria-label="With textarea"></textarea>
+          </div>
+
+          <label for="basic-url">Jumlah</label>
+          <div class="input-group mb-3">
+            <input type="text" name="jml" id="jml" class="form-control" placeholder="Jumlah">
+          </div>
+          <br>
+          <div class="input-group mb-3">
+            <button class="btn btn-primary btn-flat btn-block">Simpan</button>
+          </div>
+        </td>
+      </table>
+    </form>
+  </section>
+
+  <section class="navy" id="section3">
+    <div class="content">
+      <h4>CONTACT US</h4>
+      <span>Jl. Kumbang No. 14 Cilibende Bogor, Jawa Barat, Indonesia</span><br>
+      <span>Phone: (0251) 8329101</span><br>
+      <span>E-mail: sv@apps.ipb.ac.id.</span><br>
+    </div>
+    <div class="clear"></div>
+  </section>
+
+  <section class="gray" id="section4">
+    <div class="content">
+      <p>Copyright © 2019 - Developed by Kelompok 6</p>
+    </div>
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    window.app.requireAuth();
+    const id = window.app.getQueryParam('no');
+    if (!id) {
+      alert('ID tidak ditemukan');
+      window.location.href = 'data_barang.html';
+    }
+
+    async function loadItem() {
+      const data = await window.app.apiJson(`/api/barang?id=${id}`);
+      if (!data) {
+        alert('Data tidak ditemukan');
+        window.location.href = 'data_barang.html';
+        return;
+      }
+      document.getElementById('no').value = data.no;
+      document.getElementById('kd_alat').value = data.kode_alat || '';
+      document.getElementById('kategori').value = data.kategori || '';
+      document.getElementById('merek').value = data.merek || '';
+      document.getElementById('nama_alat').value = data.nama_alat || '';
+      document.getElementById('spek').value = data.spesifikasi || '';
+      document.getElementById('jml').value = data.jumlah || '';
+    }
+
+    document.getElementById('editBarangForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      try {
+        await window.app.apiJson(`/api/barang?id=${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+        window.location.href = 'data_barang.html';
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+
+    loadItem().catch((err) => alert(err.message));
+  </script>
+</body>
+</html>

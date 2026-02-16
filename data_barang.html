@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Inventaris Barang</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="container">
+    <section id="menu">
+      <nav class="navbar navbar-light bg-dark">
+        <ul>
+          <li><a href="index.html">Beranda</a></li>
+          <li><a href="data_barang.html">Data Barang</a></li>
+          <li><a href="input_barang.html">Input Barang</a></li>
+          <li><a href="pinjam_alat.html">Pinjam Alat</a></li>
+          <li><a href="tentang_kami.html">Tentang Kami</a></li>
+        </ul>
+        <a href="#" class="btn btn-white" onclick="window.app.logout()">Logout</a>
+      </nav>
+    </section>
+  </div>
+
+  <section class="navy" id="section1">
+    <div class="content">
+      <img align="left" src="image/LogoIPB.png" width="400px">
+      <h1 align="right">Inventaris Barang Lab Komputer</h1>
+      <p align="right">Inventaris Barang Lab Komputer Sekolah Vokasi Institut Pertanian Bogor</p>
+    </div>
+  </section>
+
+  <section class="white" id="section2"><br>
+    <div class="content">
+      <h2 align="center">Daftar Barang</h2>
+      <table id="tdd" class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th scope="col" align="left">Kode Alat</th>
+            <th scope="col" align="left">Kategori</th>
+            <th scope="col" align="left">Merek</th>
+            <th scope="col" align="left">Nama Alat</th>
+            <th scope="col" align="left">Spesifikasi</th>
+            <th scope="col" align="left">Jumlah</th>
+            <th scope="col" align="left">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="barangBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="navy" id="section3">
+    <div class="content">
+      <h4>CONTACT US</h4>
+      <span>Jl. Kumbang No. 14 Cilibende Bogor, Jawa Barat, Indonesia</span><br>
+      <span>Phone: (0251) 8329101</span><br>
+      <span>E-mail: sv@apps.ipb.ac.id.</span><br>
+    </div>
+    <div class="clear"></div>
+  </section>
+
+  <section class="gray" id="section4">
+    <div class="content">
+      <p>Copyright © 2019 - Developed by Kelompok 6</p>
+    </div>
+  </section>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+  <script src="app.js"></script>
+  <script>
+    window.app.requireAuth();
+
+    function renderRows(rows) {
+      const body = document.getElementById('barangBody');
+      body.innerHTML = '';
+      rows.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td align="left">${row.kode_alat || ''}</td>
+          <td align="left">${row.kategori || ''}</td>
+          <td align="left">${row.merek || ''}</td>
+          <td align="left">${row.nama_alat || ''}</td>
+          <td align="left">${row.spesifikasi || ''}</td>
+          <td align="left">${row.jumlah || ''}</td>
+          <td>
+            <a href="edit_barang.html?no=${row.no}">Edit</a> |
+            <a href="#" data-id="${row.no}" class="delete-link">Delete</a> |
+            <a href="generate_barcode.html?no=${row.no}">Generate</a>
+          </td>
+        `;
+        body.appendChild(tr);
+      });
+    }
+
+    async function loadData() {
+      const rows = await window.app.apiJson('/api/barang');
+      renderRows(rows);
+      $('#tdd').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        info: true,
+        dom: 'Bfrtip',
+        buttons: [
+          'copyHtml5',
+          'excelHtml5',
+          {
+            extend: 'pdfHtml5',
+            text: 'Unduh PDF',
+            orientation: 'portrait',
+            pageSize: 'A4',
+            customize: function (doc) {
+              doc.content[1].table.widths = Array(doc.content[1].table.body[0].length + 1).join('*').split('');
+            },
+            title: function () {
+              return 'Laporan Data Barang Inventaris Lab Komputer';
+            }
+          }
+        ]
+      });
+    }
+
+    document.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('delete-link')) {
+        e.preventDefault();
+        const id = e.target.getAttribute('data-id');
+        if (!confirm('Anda yakin ingin menghapus data?')) return;
+        try {
+          await window.app.apiJson(`/api/barang?id=${id}`, { method: 'DELETE' });
+          window.location.reload();
+        } catch (err) {
+          alert(err.message);
+        }
+      }
+    });
+
+    loadData().catch((err) => alert(err.message));
+  </script>
+</body>
+</html>

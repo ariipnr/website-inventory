@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Inventaris Barang</title>
+  <title>Generate Barcode</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
   <div id="container">
@@ -30,7 +31,13 @@
   </section>
 
   <section class="white" id="section2"><br><br>
-    <div class="content"></div>
+    <div class="content" align="center">
+      <h2>Barcode</h2>
+      <svg id="barcode"></svg>
+      <div class="mt-3">
+        <button class="btn btn-primary" onclick="window.print()">Print</button>
+      </div>
+    </div>
   </section>
 
   <section class="navy" id="section3">
@@ -49,12 +56,32 @@
     </div>
   </section>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
-  <script src="script.js"></script>
   <script>
     window.app.requireAuth();
+    const id = window.app.getQueryParam('no');
+    if (!id) {
+      alert('ID tidak ditemukan');
+      window.location.href = 'data_barang.html';
+    }
+
+    async function loadBarcode() {
+      const data = await window.app.apiJson(`/api/barang?id=${id}`);
+      const text = data && data.kode_alat ? data.kode_alat : '';
+      if (!text) {
+        alert('Kode alat tidak ditemukan');
+        return;
+      }
+      JsBarcode('#barcode', text, {
+        format: 'CODE39',
+        lineColor: '#000',
+        width: 2,
+        height: 80,
+        displayValue: true
+      });
+    }
+
+    loadBarcode().catch((err) => alert(err.message));
   </script>
 </body>
 </html>

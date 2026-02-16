@@ -4,6 +4,7 @@
   <title>Inventaris Barang</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
   <div id="container">
@@ -30,7 +31,29 @@
   </section>
 
   <section class="white" id="section2"><br><br>
-    <div class="content"></div>
+    <div class="content">
+      <h2 align="center">Grafik Chart</h2>
+      <p align="center">Jumlah Berdasarkan Kategori</p>
+      <br>
+      <table align="center">
+        <tr>
+          <td>
+            <div style="width: 800px; margin: 0px auto;">
+              <canvas id="myChart"></canvas>
+            </div>
+            <br>
+          </td>
+          <td>
+            <table border="0" class="table table-hover table-striped" id="chartTable">
+              <tr>
+                <th>Kategori</th>
+                <th>Jumlah</th>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
   </section>
 
   <section class="navy" id="section3">
@@ -52,9 +75,47 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
-  <script src="script.js"></script>
   <script>
     window.app.requireAuth();
+
+    async function loadChart() {
+      const response = await window.app.apiJson('/api/chart');
+      const data = response.data || [];
+
+      const labels = data.map((d) => d.kategori);
+      const values = data.map((d) => d.jumlah);
+
+      const table = document.getElementById('chartTable');
+      data.forEach((item) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td align="left">${item.kategori}</td><td>${item.jumlah}</td>`;
+        table.appendChild(tr);
+      });
+
+      const ctx = document.getElementById('myChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels,
+          datasets: [{
+            label: '',
+            data: values,
+            backgroundColor: [
+              'rgb(255, 99, 132)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 206, 86)',
+              'rgb(75, 192, 192)',
+              'rgb(188, 43, 255)',
+              'rgb(180, 177, 181)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {}
+      });
+    }
+
+    loadChart().catch((err) => alert(err.message));
   </script>
 </body>
 </html>

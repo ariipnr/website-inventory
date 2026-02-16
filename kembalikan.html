@@ -30,7 +30,23 @@
   </section>
 
   <section class="white" id="section2"><br><br>
-    <div class="content"></div>
+    <div class="content">
+      <h2 align="center">Form Pengembalian Alat</h2>
+      <br>
+      <form id="kembalikanForm">
+        <table width="450" align="center" border="0">
+          <td>
+            <label for="basic-url">Tanggal Pengembalian</label>
+            <div class="input-group mb-3">
+              <input type="date" name="tgl_pengembalian" class="form-control">
+            </div>
+            <div class="input-group mb-3">
+              <button class="btn btn-warning btn-flat btn-block">Kembalikan Alat</button>
+            </div>
+          </td>
+        </table>
+      </form>
+    </div>
   </section>
 
   <section class="navy" id="section3">
@@ -52,9 +68,28 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="app.js"></script>
-  <script src="script.js"></script>
   <script>
     window.app.requireAuth();
+    const id = window.app.getQueryParam('no');
+    if (!id) {
+      alert('ID tidak ditemukan');
+      window.location.href = 'pinjam_alat.html';
+    }
+
+    document.getElementById('kembalikanForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      try {
+        await window.app.apiJson(`/api/peminjaman?id=${id}`, {
+          method: 'PUT',
+          body: JSON.stringify(payload)
+        });
+        window.location.href = 'pinjam_alat.html';
+      } catch (err) {
+        alert(err.message);
+      }
+    });
   </script>
 </body>
 </html>

@@ -15,8 +15,10 @@
           <li><a href="input_barang.html">Input Barang</a></li>
           <li><a href="pinjam_alat.html">Pinjam Alat</a></li>
           <li><a href="tentang_kami.html">Tentang Kami</a></li>
+          <li style="min-width: 400px">&nbsp</li>
         </ul>
-        <a href="#" class="btn btn-white" onclick="window.app.logout()">Logout</a>
+        <span style="color: white;">Selamat Datang, <span id="username"></span></span>
+        <button type="button" class="btn btn-primary" onclick="window.app.logout()">Logout</button>
       </nav>
     </section>
   </div>
@@ -30,7 +32,18 @@
   </section>
 
   <section class="white" id="section2"><br><br>
-    <div class="content"></div>
+    <div class="content">
+      <table align="center">
+        <tr>
+          <td><a href="data_barang.html"><img class="isi" src="image/Lihat.jpg"></a></td>
+          <td><a href="input_barang.html"><img class="isi" src="image/Input.jpg"></a></td>
+        </tr>
+        <tr>
+          <td><a href="pinjam_alat.html"><img class="isi" src="image/Pinjam.jpg"></a></td>
+          <td><a href="chart.html"><img class="isi" src="image/Kembalikan.jpg"></a></td>
+        </tr>
+      </table>
+    </div>
   </section>
 
   <section class="navy" id="section3">
@@ -55,6 +68,14 @@
   <script src="script.js"></script>
   <script>
     window.app.requireAuth();
+    (async () => {
+      try {
+        const data = await window.app.apiJson('/api/me');
+        document.getElementById('username').textContent = data.username || '';
+      } catch {
+        document.getElementById('username').textContent = '';
+      }
+    })();
   </script>
 </body>
 </html>
