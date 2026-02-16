@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/", "destination": "/login.html" },
     { "source": "/index.php", "destination": "/index.html" },
     { "source": "/login.php", "destination": "/login.html" },
     { "source": "/data_barang.php", "destination": "/data_barang.html" },
