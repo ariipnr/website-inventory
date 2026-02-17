@@ -4,50 +4,52 @@
   <title>Inventaris Barang</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
-  <div id="container">
-    <section id="menu">
-      <nav class="navbar navbar-light bg-dark">
-        <ul>
-          <li><a href="dashboard.html">Beranda</a></li>
-          <li><a href="data_barang.html">Data Barang</a></li>
-          <li><a href="input_barang.html">Input Barang</a></li>
-          <li><a href="pinjam_alat.html">Pinjam Alat</a></li>
-          <li><a href="tentang_kami.html">Tentang Kami</a></li>
-        </ul>
-        <a href="#" class="btn btn-white" onclick="window.app.logout()">Logout</a>
+<body class="dashboard-page">
+  <div class="crm-shell">
+    <aside class="crm-sidebar">
+      <div class="crm-brand">
+        <img src="image/LogoIPB.png" alt="Logo IPB">
+        <div>
+          <h2>Inventory CRM</h2>
+          <span>Lab Komputer</span>
+        </div>
+      </div>
+      <nav class="crm-nav">
+        <a class="crm-nav__link" href="dashboard.html">Beranda</a>
+        <a class="crm-nav__link" href="data_barang.html">Data Barang</a>
+        <a class="crm-nav__link" href="input_barang.html">Input Barang</a>
+        <a class="crm-nav__link" href="pinjam_alat.html">Peminjaman</a>
+        <a class="crm-nav__link" href="chart.html">Laporan</a>
+        <a class="crm-nav__link active" href="tentang_kami.html">Tentang Kami</a>
       </nav>
-    </section>
+      <div class="crm-sidebar__footer">
+        <span>Aktif sebagai</span>
+        <strong id="username">-</strong>
+        <button type="button" class="btn btn-outline-light btn-sm" onclick="window.app.logout()">Logout</button>
+      </div>
+    </aside>
+
+    <main class="crm-main">
+      <header class="crm-topbar">
+        <div>
+          <h1>Tentang Kami</h1>
+          <p>Sistem inventaris untuk mendukung pengelolaan lab komputer.</p>
+        </div>
+      </header>
+
+      <section class="crm-panel">
+        <h3>Profil Singkat</h3>
+        <p>
+          Website inventory ini membantu pengelolaan aset, peminjaman, dan pelaporan barang di Lab Komputer
+          Sekolah Vokasi IPB. Sistem ini dirancang agar proses pencatatan lebih cepat, rapi, dan mudah diaudit.
+        </p>
+      </section>
+    </main>
   </div>
-
-  <section class="navy" id="section1">
-    <div class="content">
-      <img align="left" src="image/LogoIPB.png" width="400px">
-      <h1 align="right">Inventaris Barang Lab Komputer</h1>
-      <p align="right">Inventaris Barang Lab Komputer Sekolah Vokasi Institut Pertanian Bogor</p>
-    </div>
-  </section>
-
-  <section class="white" id="section2"><br><br>
-    <div class="content"></div>
-  </section>
-
-  <section class="navy" id="section3">
-    <div class="content">
-      <h4>CONTACT US</h4>
-      <span>Jl. Kumbang No. 14 Cilibende Bogor, Jawa Barat, Indonesia</span><br>
-      <span>Phone: (0251) 8329101</span><br>
-      <span>E-mail: sv@apps.ipb.ac.id.</span><br>
-    </div>
-    <div class="clear"></div>
-  </section>
-
-  <section class="gray" id="section4">
-    <div class="content">
-      <p>Copyright © 2019 - Developed by Kelompok 6</p>
-    </div>
-  </section>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
@@ -55,6 +57,14 @@
   <script src="script.js"></script>
   <script>
     window.app.requireAuth();
+    (async () => {
+      try {
+        const data = await window.app.apiJson('/api/me');
+        document.getElementById('username').textContent = data.username || '';
+      } catch {
+        document.getElementById('username').textContent = '';
+      }
+    })();
   </script>
 </body>
 </html>
