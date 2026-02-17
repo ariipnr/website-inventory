@@ -51,6 +51,11 @@
             <input type="text" name="kd_alat" id="kd_alat" class="form-control" placeholder="Kode Alat">
           </div>
 
+          <label for="basic-url">Serial Number</label>
+          <div class="input-group mb-3">
+            <input type="text" name="serial_number" id="serial_number" class="form-control" placeholder="Serial Number">
+          </div>
+
           <label for="basic-url">Kategori</label>
           <div class="input-group mb-3">
             <select name="kategori" id="kategori" class="form-control" required>
@@ -121,6 +126,7 @@
       }
       document.getElementById('no').value = data.no;
       document.getElementById('kd_alat').value = data.kode_alat || '';
+      document.getElementById('serial_number').value = data.serial_number || '';
       document.getElementById('kategori').value = data.kategori || '';
       document.getElementById('merek').value = data.merek || '';
       document.getElementById('nama_alat').value = data.nama_alat || '';

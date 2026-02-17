@@ -50,6 +50,7 @@
         <thead>
           <tr>
             <th scope="col" align="left">Kode Alat</th>
+            <th scope="col" align="left">Serial Number</th>
             <th scope="col" align="left">Kategori</th>
             <th scope="col" align="left">Merek</th>
             <th scope="col" align="left">Nama Alat</th>
@@ -79,6 +80,10 @@
         <div class="form-group">
           <label>Kode Alat</label>
           <input type="text" name="kd_alat" id="modalKode" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Serial Number</label>
+          <input type="text" name="serial_number" id="modalSerial" class="form-control" placeholder="Serial Number">
         </div>
         <div class="form-group">
           <label>Kategori</label>
@@ -167,6 +172,7 @@
     const barangModalTitle = document.getElementById('barangModalTitle');
     const barangModalForm = document.getElementById('barangModalForm');
     const modalNo = document.getElementById('modalNo');
+    const modalSerial = document.getElementById('modalSerial');
     const barangHistoryModal = document.getElementById('barangHistoryModal');
     const barangHistoryTitle = document.getElementById('barangHistoryTitle');
     const barangHistoryBody = document.getElementById('barangHistoryBody');
@@ -188,6 +194,7 @@
       barangModalTitle.textContent = mode === 'edit' ? 'Edit Barang' : 'Input Barang';
       modalNo.value = data.no || '';
       document.getElementById('modalKode').value = data.kode_alat || '';
+      modalSerial.value = data.serial_number || '';
       document.getElementById('modalKategori').value = data.kategori || 'Network Device';
       document.getElementById('modalMerek').value = data.merek || '';
       document.getElementById('modalNama').value = data.nama_alat || '';
@@ -255,6 +262,7 @@
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td align="left">${row.kode_alat || ''}</td>
+          <td align="left">${row.serial_number || ''}</td>
           <td align="left">${row.kategori || ''}</td>
           <td align="left">${row.merek || ''}</td>
           <td align="left">${row.nama_alat || ''}</td>

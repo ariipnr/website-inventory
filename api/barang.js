@@ -32,10 +32,11 @@ module.exports = async (req, res) => {
 
     if (req.method === 'POST') {
       const body = await readBody(req);
-      const { kd_alat, kategori, merek, nama_alat, spek, jml } = body;
+      const { kd_alat, serial_number, kategori, merek, nama_alat, spek, jml } = body;
 
       const { error } = await supabase.from('input_barang').insert({
         kode_alat: kd_alat,
+        serial_number,
         kategori,
         merek,
         nama_alat,
@@ -52,12 +53,13 @@ module.exports = async (req, res) => {
         return res.end(JSON.stringify({ error: 'Missing id' }));
       }
       const body = await readBody(req);
-      const { kd_alat, kategori, merek, nama_alat, spek, jml } = body;
+      const { kd_alat, serial_number, kategori, merek, nama_alat, spek, jml } = body;
 
       const { error } = await supabase
         .from('input_barang')
         .update({
           kode_alat: kd_alat,
+          serial_number,
           kategori,
           merek,
           nama_alat,

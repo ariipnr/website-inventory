@@ -93,15 +93,20 @@
       <form id="pinjamForm">
         <div class="form-group">
           <label>NIM</label>
-          <input type="text" name="nim" class="form-control" placeholder="NIM" required>
+          <select name="nim" id="nimSelect" class="form-control" required>
+            <option value="">Pilih NIM</option>
+          </select>
         </div>
         <div class="form-group">
           <label>Nama</label>
-          <input type="text" name="nama" class="form-control" placeholder="Nama" required>
+          <input type="text" name="nama" id="namaInput" class="form-control" placeholder="Nama" required>
         </div>
         <div class="form-group">
           <label>Kode Alat</label>
-          <input type="text" name="kode_alat" class="form-control" placeholder="Kode Alat" required>
+          <select name="kode_alat" id="kodeSelect" class="form-control" required>
+            <option value="">Pilih Kode Alat</option>
+          </select>
+          <small id="kodeInfo" class="form-text text-muted"></small>
         </div>
         <div class="form-group">
           <label>Tanggal Peminjaman</label>
@@ -195,12 +200,18 @@
     const pinjamAlert = document.getElementById('pinjamAlert');
     const returnModal = document.getElementById('returnModal');
     const returnAlert = document.getElementById('returnAlert');
+    const nimSelect = document.getElementById('nimSelect');
+    const namaInput = document.getElementById('namaInput');
+    const kodeSelect = document.getElementById('kodeSelect');
+    const kodeInfo = document.getElementById('kodeInfo');
     const borrowerSummaryBody = document.getElementById('borrowerSummaryBody');
     const borrowerHistoryModal = document.getElementById('borrowerHistoryModal');
     const borrowerHistoryTitle = document.getElementById('borrowerHistoryTitle');
     const borrowerHistoryBody = document.getElementById('borrowerHistoryBody');
 
     let borrowerMap = {};
+    let barangMap = {};
+    let pinjamByKode = {};
 
     function isActiveLoan(row) {
       const status = (row.status || '').toLowerCase();
@@ -276,6 +287,39 @@
       }, 180);
     }
 
+    function renderBorrowerOptions() {
+      const borrowers = Object.values(borrowerMap)
+        .filter((borrower) => borrower.nim)
+        .sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+      nimSelect.innerHTML = '<option value="">Pilih NIM</option>';
+      borrowers.forEach((borrower) => {
+        const option = document.createElement('option');
+        option.value = borrower.nim || '';
+        option.textContent = `${borrower.nim || '-'}${borrower.nama ? ` - ${borrower.nama}` : ''}`;
+        nimSelect.appendChild(option);
+      });
+    }
+
+    function renderKodeOptions() {
+      const items = Object.values(barangMap).sort((a, b) => (a.kode_alat || '').localeCompare(b.kode_alat || ''));
+      kodeSelect.innerHTML = '<option value="">Pilih Kode Alat</option>';
+      items.forEach((item) => {
+        const loans = pinjamByKode[item.kode_alat] || [];
+        const activeCount = loans.filter((loan) => isActiveLoan(loan)).length;
+        const jumlah = Number(item.jumlah) || 0;
+        const tersedia = jumlah - activeCount;
+        const option = document.createElement('option');
+        option.value = item.kode_alat || '';
+        option.dataset.nama = item.nama_alat || '';
+        option.dataset.tersedia = String(tersedia);
+        option.textContent = `${item.kode_alat || '-'}${item.nama_alat ? ` - ${item.nama_alat}` : ''} (Sisa ${tersedia})`;
+        if (tersedia <= 0) {
+          option.disabled = true;
+        }
+        kodeSelect.appendChild(option);
+      });
+    }
+
     document.getElementById('openPinjamModal').addEventListener('click', openPinjamModal);
     pinjamModal.addEventListener('click', (e) => {
       if (e.target.hasAttribute('data-close')) {
@@ -293,6 +337,27 @@
       if (e.target.hasAttribute('data-close')) {
         closeBorrowerHistory();
       }
+    });
+
+    nimSelect.addEventListener('change', () => {
+      const nim = nimSelect.value;
+      const borrower = borrowerMap[nim];
+      if (borrower && borrower.nama) {
+        namaInput.value = borrower.nama;
+      } else if (!nim) {
+        namaInput.value = '';
+      }
+    });
+
+    kodeSelect.addEventListener('change', () => {
+      const selected = kodeSelect.options[kodeSelect.selectedIndex];
+      if (!selected || !selected.value) {
+        kodeInfo.textContent = '';
+        return;
+      }
+      const namaAlat = selected.dataset.nama || '';
+      const tersedia = selected.dataset.tersedia || '';
+      kodeInfo.textContent = `${namaAlat ? `Nama: ${namaAlat}. ` : ''}Ketersediaan: ${tersedia}`;
     });
 
     function renderRows(rows) {
@@ -328,6 +393,9 @@
           acc[key] = { nim: row.nim, nama: row.nama, activeItems: [], allRows: [] };
         }
         acc[key].allRows.push(row);
+        if (!acc[key].nama && row.nama) {
+          acc[key].nama = row.nama;
+        }
         if (isActiveLoan(row)) {
           acc[key].activeItems.push(`${row.kode_alat || '-'}${row.nama_alat ? ` - ${row.nama_alat}` : ''}`);
         }
@@ -358,9 +426,24 @@
     }
 
     async function loadData() {
-      const rows = await window.app.apiJson('/api/peminjaman');
+      const [rows, barang] = await Promise.all([
+        window.app.apiJson('/api/peminjaman'),
+        window.app.apiJson('/api/barang')
+      ]);
+      barangMap = (barang || []).reduce((acc, row) => {
+        acc[row.kode_alat] = row;
+        return acc;
+      }, {});
+      pinjamByKode = (rows || []).reduce((acc, row) => {
+        const key = row.kode_alat || 'unknown';
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(row);
+        return acc;
+      }, {});
       renderRows(rows);
       renderBorrowerSummary(rows);
+      renderBorrowerOptions();
+      renderKodeOptions();
       $('#tdd').DataTable({
         paging: true,
         searching: true,
@@ -388,6 +471,10 @@
     document.getElementById('pinjamForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       pinjamAlert.innerHTML = '';
+      if (kodeSelect.options[kodeSelect.selectedIndex] && kodeSelect.options[kodeSelect.selectedIndex].disabled) {
+        pinjamAlert.innerHTML = '<div class="alert alert-danger" role="alert">Barang tidak tersedia.</div>';
+        return;
+      }
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
       try {
