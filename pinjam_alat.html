@@ -535,9 +535,10 @@
     });
 
     document.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('return-pinjam')) {
+      const returnLink = e.target.closest('.return-pinjam');
+      if (returnLink) {
         e.preventDefault();
-        const id = e.target.getAttribute('data-id');
+        const id = returnLink.getAttribute('data-id');
         const row = (window.currentPinjam || []).find((r) => String(r.no) === String(id));
         document.getElementById('returnNo').value = id;
         document.getElementById('returnTanggal').value = row && row.tgl_pengembalian ? row.tgl_pengembalian : '';
@@ -545,9 +546,10 @@
         openReturnModal();
         return;
       }
-      if (e.target.classList.contains('delete-pinjam')) {
+      const deleteLink = e.target.closest('.delete-pinjam');
+      if (deleteLink) {
         e.preventDefault();
-        const id = e.target.getAttribute('data-id');
+        const id = deleteLink.getAttribute('data-id');
         if (!confirm('Anda yakin ingin menghapus data?')) return;
         try {
           await window.app.apiJson(`/api/peminjaman?id=${id}`, { method: 'DELETE' });
@@ -556,9 +558,10 @@
           alert(err.message);
         }
       }
-      if (e.target.classList.contains('borrower-history')) {
+      const borrowerLink = e.target.closest('.borrower-history');
+      if (borrowerLink) {
         e.preventDefault();
-        const nim = e.target.getAttribute('data-nim');
+        const nim = borrowerLink.getAttribute('data-nim');
         openBorrowerHistory(nim);
       }
     });

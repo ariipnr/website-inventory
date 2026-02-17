@@ -209,9 +209,10 @@
     });
 
     document.addEventListener('click', async (e) => {
-      if (e.target.classList.contains('edit-link')) {
+      const editLink = e.target.closest('.edit-link');
+      if (editLink) {
         e.preventDefault();
-        const id = e.target.getAttribute('data-id');
+        const id = editLink.getAttribute('data-id');
         try {
           const data = await window.app.apiJson(`/api/peminjam?id=${id}`);
           openPeminjamModal('edit', data || {});
@@ -219,9 +220,10 @@
           alert(err.message);
         }
       }
-      if (e.target.classList.contains('delete-link')) {
+      const deleteLink = e.target.closest('.delete-link');
+      if (deleteLink) {
         e.preventDefault();
-        const id = e.target.getAttribute('data-id');
+        const id = deleteLink.getAttribute('data-id');
         if (!confirm('Anda yakin ingin menghapus data?')) return;
         try {
           await window.app.apiJson(`/api/peminjam?id=${id}`, { method: 'DELETE' });
