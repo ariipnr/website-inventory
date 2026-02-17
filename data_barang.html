@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,7 +48,7 @@
       </header>
 
       <section class="crm-panel">
-        <table id="tdd" class="table table-hover table-striped">
+        <table id="tdd" class="table table-hover table-striped table-modern">
         <thead>
           <tr>
             <th scope="col" align="left">Kode Alat</th>
@@ -272,10 +273,20 @@
           <td align="left"><span class="${statusClass}">${statusLabel}</span></td>
           <td align="left">${borrower}</td>
           <td>
-            <a href="#" data-id="${row.no}" class="edit-link">Edit</a> |
-            <a href="#" data-id="${row.no}" class="delete-link">Delete</a> |
-            <a href="#" data-kode="${row.kode_alat || ''}" class="history-link">Riwayat</a> |
-            <a href="generate_barcode.html?no=${row.no}">Generate</a>
+            <span class="action-group">
+              <a href="#" data-id="${row.no}" class="edit-link action-link action-icon" title="Edit" aria-label="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </a>
+              <a href="#" data-id="${row.no}" class="delete-link action-link action-link--danger action-icon" title="Hapus" aria-label="Hapus">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+              <a href="#" data-kode="${row.kode_alat || ''}" class="history-link action-link action-icon" title="Riwayat" aria-label="Riwayat">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+              </a>
+              <a href="generate_barcode.html?no=${row.no}" class="action-link action-icon" title="Barcode" aria-label="Barcode">
+                <i class="fa-solid fa-qrcode"></i>
+              </a>
+            </span>
           </td>
         `;
         body.appendChild(tr);

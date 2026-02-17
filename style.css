@@ -671,6 +671,107 @@ img {
 	margin-top: 12px;
 }
 
+.table-modern {
+	font-size: 0.88rem;
+	border-radius: 14px;
+	overflow: hidden;
+	box-shadow: var(--shadow-md);
+	border: 1px solid rgba(13, 59, 120, 0.08);
+}
+
+.table-modern thead th {
+	background: rgba(13, 59, 120, 0.08);
+	color: var(--ipb-blue-deep);
+	font-weight: 600;
+	border-bottom: 1px solid rgba(13, 59, 120, 0.12);
+}
+
+.table-modern tbody tr:hover {
+	background: rgba(13, 59, 120, 0.05);
+}
+
+.table-modern td,
+.table-modern th {
+	vertical-align: middle;
+}
+
+.table-modern .action-group {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 0.86rem;
+}
+
+.table-modern .action-link {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--ipb-blue-deep);
+	text-decoration: none;
+	font-weight: 600;
+}
+
+.table-modern .action-link:hover {
+	color: #0f5aa3;
+	text-decoration: none;
+}
+
+.table-modern .action-link--danger {
+	color: #b42318;
+}
+
+.table-modern .action-link--danger:hover {
+	color: #8a1612;
+}
+
+.table-modern .action-icon {
+	width: 32px;
+	height: 32px;
+	border-radius: 10px;
+	justify-content: center;
+	background: rgba(13, 59, 120, 0.08);
+}
+
+.table-modern .action-icon i {
+	font-size: 0.9rem;
+}
+
+.table-modern .action-link--danger.action-icon {
+	background: rgba(180, 35, 24, 0.12);
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_wrapper .dataTables_length select {
+	border: 1px solid rgba(13, 59, 120, 0.2);
+	border-radius: 10px;
+	padding: 6px 10px;
+	font-size: 0.85rem;
+}
+
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+	font-size: 0.85rem;
+	color: #4b5563;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	border-radius: 10px !important;
+	border: 1px solid transparent !important;
+	padding: 4px 10px !important;
+	font-size: 0.85rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+	background: rgba(13, 59, 120, 0.12) !important;
+	border: 1px solid rgba(13, 59, 120, 0.2) !important;
+	color: var(--ipb-blue-deep) !important;
+}
+
+.dataTables_wrapper .dataTables_info {
+	font-size: 0.85rem;
+	color: #4b5563;
+}
+
 @media (max-width: 960px) {
 	.login-shell {
 		grid-template-columns: 1fr;

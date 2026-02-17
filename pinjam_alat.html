@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +49,7 @@
 
       <section class="crm-panel">
         <h3>Ringkasan Peminjam Aktif</h3>
-        <table class="table table-hover table-striped">
+        <table class="table table-hover table-striped table-modern">
         <thead>
           <tr>
             <th scope="col" align="left">NIM</th>
@@ -64,7 +65,7 @@
 
       <section class="crm-panel">
         <h3>Daftar Peminjam</h3>
-        <table id="tdd" class="table table-hover table-striped">
+        <table id="tdd" class="table table-hover table-striped table-modern">
         <thead>
           <tr>
             <th scope="col" align="left">Nim</th>
@@ -384,8 +385,14 @@
           <td align="left">${row.tgl_pengembalian || ''}</td>
           <td align="left"><span class="${statusClass}">${statusLabel}</span></td>
           <td>
-            <a href="#" data-id="${row.no}" class="return-pinjam">Kembalikan</a> |
-            <a href="#" data-id="${row.no}" class="delete-pinjam">Hapus</a>
+            <span class="action-group">
+              <a href="#" data-id="${row.no}" class="return-pinjam action-link action-icon" title="Kembalikan" aria-label="Kembalikan">
+                <i class="fa-solid fa-rotate-left"></i>
+              </a>
+              <a href="#" data-id="${row.no}" class="delete-pinjam action-link action-link--danger action-icon" title="Hapus" aria-label="Hapus">
+                <i class="fa-solid fa-trash"></i>
+              </a>
+            </span>
           </td>
         `;
         body.appendChild(tr);
@@ -426,7 +433,13 @@
             <td align="left">${borrower.nama || '-'}</td>
             <td align="left">${activeItems}</td>
             <td align="left">${lastDate}</td>
-            <td><a href="#" data-nim="${borrower.nim || ''}" class="borrower-history">Riwayat</a></td>
+            <td>
+              <span class="action-group">
+                <a href="#" data-nim="${borrower.nim || ''}" class="borrower-history action-link action-icon" title="Riwayat" aria-label="Riwayat">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                </a>
+              </span>
+            </td>
           `;
           borrowerSummaryBody.appendChild(tr);
         });
