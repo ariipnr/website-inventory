@@ -551,6 +551,34 @@ img {
 	border: 1px dashed rgba(13, 59, 120, 0.3);
 }
 
+.status-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 4px 10px;
+	border-radius: 999px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.2px;
+}
+
+.status-badge--available {
+	background: rgba(17, 128, 74, 0.14);
+	color: #0f6a3e;
+	border: 1px solid rgba(17, 128, 74, 0.28);
+}
+
+.status-badge--borrowed {
+	background: rgba(18, 108, 190, 0.16);
+	color: #0f5aa3;
+	border: 1px solid rgba(18, 108, 190, 0.32);
+}
+
+.status-muted {
+	color: #6b7280;
+	font-size: 0.85rem;
+}
+
 .crm-quick {
 	display: grid;
 	gap: 10px;

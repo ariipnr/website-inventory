@@ -46,6 +46,22 @@
       </header>
 
       <section class="crm-panel">
+        <h3>Ringkasan Peminjam Aktif</h3>
+        <table class="table table-hover table-striped">
+        <thead>
+          <tr>
+            <th scope="col" align="left">NIM</th>
+            <th scope="col" align="left">Nama</th>
+            <th scope="col" align="left">Meminjam</th>
+            <th scope="col" align="left">Terakhir Pinjam</th>
+            <th scope="col" align="left">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="borrowerSummaryBody"></tbody>
+        </table>
+      </section>
+
+      <section class="crm-panel">
         <h3>Daftar Peminjam</h3>
         <table id="tdd" class="table table-hover table-striped">
         <thead>
@@ -128,6 +144,33 @@
     </div>
   </div>
 
+  <div class="crm-modal" id="borrowerHistoryModal" aria-hidden="true">
+    <div class="crm-modal__backdrop" data-close></div>
+    <div class="crm-modal__content" role="dialog" aria-modal="true">
+      <div class="crm-modal__header">
+        <h3 id="borrowerHistoryTitle">Riwayat Peminjam</h3>
+        <button class="crm-modal__close" type="button" data-close>&times;</button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-striped">
+          <thead>
+            <tr>
+              <th align="left">Kode Alat</th>
+              <th align="left">Nama Alat</th>
+              <th align="left">Tanggal Pinjam</th>
+              <th align="left">Tanggal Kembali</th>
+              <th align="left">Status</th>
+            </tr>
+          </thead>
+          <tbody id="borrowerHistoryBody"></tbody>
+        </table>
+      </div>
+      <div class="crm-modal__actions">
+        <button type="button" class="btn btn-light" data-close>Tutup</button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -152,6 +195,19 @@
     const pinjamAlert = document.getElementById('pinjamAlert');
     const returnModal = document.getElementById('returnModal');
     const returnAlert = document.getElementById('returnAlert');
+    const borrowerSummaryBody = document.getElementById('borrowerSummaryBody');
+    const borrowerHistoryModal = document.getElementById('borrowerHistoryModal');
+    const borrowerHistoryTitle = document.getElementById('borrowerHistoryTitle');
+    const borrowerHistoryBody = document.getElementById('borrowerHistoryBody');
+
+    let borrowerMap = {};
+
+    function isActiveLoan(row) {
+      const status = (row.status || '').toLowerCase();
+      if (status === 'kembali') return false;
+      if (row.tgl_pengembalian) return false;
+      return true;
+    }
 
     function openPinjamModal() {
       pinjamAlert.innerHTML = '';
@@ -183,6 +239,43 @@
       }, 180);
     }
 
+    function openBorrowerHistory(nim) {
+      const borrower = borrowerMap[nim] || {};
+      borrowerHistoryTitle.textContent = `Riwayat: ${borrower.nama || ''} (${nim || ''})`;
+      borrowerHistoryBody.innerHTML = '';
+      const rows = (borrower.allRows || []).slice();
+      if (!rows.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td colspan="5" class="status-muted">Belum ada riwayat peminjaman.</td>`;
+        borrowerHistoryBody.appendChild(tr);
+      } else {
+        rows.forEach((row) => {
+          const statusClass = isActiveLoan(row) ? 'status-badge status-badge--borrowed' : 'status-badge status-badge--available';
+          const statusLabel = isActiveLoan(row) ? 'Dipinjam' : 'Tersedia';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td align="left">${row.kode_alat || '-'}</td>
+            <td align="left">${row.nama_alat || '-'}</td>
+            <td align="left">${row.tgl_peminjaman || '-'}</td>
+            <td align="left">${row.tgl_pengembalian || '-'}</td>
+            <td align="left"><span class="${statusClass}">${statusLabel}</span></td>
+          `;
+          borrowerHistoryBody.appendChild(tr);
+        });
+      }
+      borrowerHistoryModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeBorrowerHistory() {
+      borrowerHistoryModal.classList.add('is-closing');
+      setTimeout(() => {
+        borrowerHistoryModal.setAttribute('aria-hidden', 'true');
+        borrowerHistoryModal.classList.remove('is-closing');
+        document.body.classList.remove('modal-open');
+      }, 180);
+    }
+
     document.getElementById('openPinjamModal').addEventListener('click', openPinjamModal);
     pinjamModal.addEventListener('click', (e) => {
       if (e.target.hasAttribute('data-close')) {
@@ -196,11 +289,19 @@
       }
     });
 
+    borrowerHistoryModal.addEventListener('click', (e) => {
+      if (e.target.hasAttribute('data-close')) {
+        closeBorrowerHistory();
+      }
+    });
+
     function renderRows(rows) {
       window.currentPinjam = rows;
       const body = document.getElementById('pinjamBody');
       body.innerHTML = '';
       rows.forEach((row) => {
+        const statusClass = isActiveLoan(row) ? 'status-badge status-badge--borrowed' : 'status-badge status-badge--available';
+        const statusLabel = isActiveLoan(row) ? 'Dipinjam' : 'Tersedia';
         const tr = document.createElement('tr');
         tr.innerHTML = `
           <td align="left">${row.nim || ''}</td>
@@ -209,7 +310,7 @@
           <td align="left">${row.nama_alat || ''}</td>
           <td align="left">${row.tgl_peminjaman || ''}</td>
           <td align="left">${row.tgl_pengembalian || ''}</td>
-          <td align="left">${row.status || ''}</td>
+          <td align="left"><span class="${statusClass}">${statusLabel}</span></td>
           <td>
             <a href="#" data-id="${row.no}" class="return-pinjam">Kembalikan</a> |
             <a href="#" data-id="${row.no}" class="delete-pinjam">Hapus</a>
@@ -219,9 +320,47 @@
       });
     }
 
+    function renderBorrowerSummary(rows) {
+      borrowerSummaryBody.innerHTML = '';
+      borrowerMap = rows.reduce((acc, row) => {
+        const key = row.nim || 'unknown';
+        if (!acc[key]) {
+          acc[key] = { nim: row.nim, nama: row.nama, activeItems: [], allRows: [] };
+        }
+        acc[key].allRows.push(row);
+        if (isActiveLoan(row)) {
+          acc[key].activeItems.push(`${row.kode_alat || '-'}${row.nama_alat ? ` - ${row.nama_alat}` : ''}`);
+        }
+        return acc;
+      }, {});
+
+      Object.values(borrowerMap)
+        .sort((a, b) => (a.nama || '').localeCompare(b.nama || ''))
+        .forEach((borrower) => {
+          const activeItems = borrower.activeItems.length ? borrower.activeItems.join(', ') : '-';
+          const lastRow = borrower.allRows.slice().sort((a, b) => {
+            const aDate = a.tgl_peminjaman || '';
+            const bDate = b.tgl_peminjaman || '';
+            if (aDate === bDate) return Number(b.no) - Number(a.no);
+            return aDate < bDate ? 1 : -1;
+          })[0];
+          const lastDate = lastRow && lastRow.tgl_peminjaman ? lastRow.tgl_peminjaman : '-';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td align="left">${borrower.nim || '-'}</td>
+            <td align="left">${borrower.nama || '-'}</td>
+            <td align="left">${activeItems}</td>
+            <td align="left">${lastDate}</td>
+            <td><a href="#" data-nim="${borrower.nim || ''}" class="borrower-history">Riwayat</a></td>
+          `;
+          borrowerSummaryBody.appendChild(tr);
+        });
+    }
+
     async function loadData() {
       const rows = await window.app.apiJson('/api/peminjaman');
       renderRows(rows);
+      renderBorrowerSummary(rows);
       $('#tdd').DataTable({
         paging: true,
         searching: true,
@@ -303,6 +442,11 @@
         } catch (err) {
           alert(err.message);
         }
+      }
+      if (e.target.classList.contains('borrower-history')) {
+        e.preventDefault();
+        const nim = e.target.getAttribute('data-nim');
+        openBorrowerHistory(nim);
       }
     });
 
