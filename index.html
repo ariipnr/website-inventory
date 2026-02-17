@@ -17,7 +17,7 @@
         <img src="image/LogoIPB.png" alt="Logo IPB" class="ipb-topbar__logo">
       </a>
       <div class="ipb-topbar__actions">
-        <a href="login.html" class="btn btn-outline-light btn-sm">Login</a>
+        <button class="btn btn-outline-light btn-sm" id="openLoginModal">Login</button>
       </div>
     </div>
   </header>
@@ -31,9 +31,7 @@
           Kelola aset, peminjaman, dan pengembalian dengan cepat dan rapi. Sistem ini dibuat untuk
           memudahkan pelacakan perangkat dan ketersediaan alat di laboratorium.
         </p>
-        <div class="landing-hero__cta">
-          <a href="login.html" class="btn btn-primary btn-lg">Masuk Sistem</a>
-        </div>
+        <div class="landing-hero__cta"></div>
       </div>
       <div class="landing-hero__panel">
         <div class="landing-card">
@@ -47,7 +45,6 @@
         <div class="landing-card landing-card--accent">
           <h3>Butuh Akses?</h3>
           <p>Masuk menggunakan akun admin untuk mengelola inventaris dan laporan.</p>
-          <a href="login.html" class="btn btn-light btn-block">Login Sekarang</a>
         </div>
       </div>
     </section>
@@ -76,6 +73,31 @@
     </section>
   </main>
 
+  <div class="crm-modal" id="loginModal" aria-hidden="true">
+    <div class="crm-modal__backdrop" data-close></div>
+    <div class="crm-modal__content" role="dialog" aria-modal="true">
+      <div class="crm-modal__header">
+        <h3>Masuk ke Akun</h3>
+        <button class="crm-modal__close" type="button" data-close>&times;</button>
+      </div>
+      <div id="loginModalAlert"></div>
+      <form id="loginModalForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" name="email" class="form-control" placeholder="email@ipb.ac.id" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Password" required>
+        </div>
+        <div class="crm-modal__actions">
+          <button type="button" class="btn btn-light" data-close>Batal</button>
+          <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <footer class="login-footer">
     <div class="login-footer__col">
       <h4>Contact Us</h4>
@@ -88,11 +110,61 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
     if (window.app.getToken()) {
       window.location.href = 'dashboard.html';
     }
+
+    const loginModal = document.getElementById('loginModal');
+    const loginModalAlert = document.getElementById('loginModalAlert');
+
+    function openLoginModal() {
+      loginModalAlert.innerHTML = '';
+      loginModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeLoginModal() {
+      loginModal.classList.add('is-closing');
+      setTimeout(() => {
+        loginModal.setAttribute('aria-hidden', 'true');
+        loginModal.classList.remove('is-closing');
+        document.body.classList.remove('modal-open');
+      }, 180);
+    }
+
+    document.getElementById('openLoginModal').addEventListener('click', openLoginModal);
+
+    loginModal.addEventListener('click', (e) => {
+      if (e.target.hasAttribute('data-close')) {
+        closeLoginModal();
+      }
+    });
+
+    document.getElementById('loginModalForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginModalAlert.innerHTML = '';
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      try {
+        const client = window.app.getSupabaseClient();
+        if (!client) {
+          throw new Error('Supabase config tidak terbaca. Cek supabase-config.js');
+        }
+        const { data, error } = await client.auth.signInWithPassword({
+          email: payload.email,
+          password: payload.password
+        });
+        if (error) throw new Error(error.message || 'Login gagal');
+        window.app.setToken(data.session.access_token);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        loginModalAlert.innerHTML = `<div class="alert alert-danger" role="alert">${err.message}</div>`;
+      }
+    });
   </script>
 </body>
 </html>
