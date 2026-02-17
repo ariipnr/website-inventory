@@ -672,7 +672,7 @@ img {
 }
 
 .table-modern {
-	font-size: 0.88rem;
+	font-size: 0.82rem;
 	border-radius: 14px;
 	overflow: hidden;
 	box-shadow: var(--shadow-md);
@@ -684,6 +684,8 @@ img {
 	color: var(--ipb-blue-deep);
 	font-weight: 600;
 	border-bottom: 1px solid rgba(13, 59, 120, 0.12);
+	text-align: left;
+	vertical-align: middle;
 }
 
 .table-modern tbody tr:hover {
@@ -693,6 +695,10 @@ img {
 .table-modern td,
 .table-modern th {
 	vertical-align: middle;
+}
+
+.crm-panel + .crm-panel {
+	margin-top: 18px;
 }
 
 .table-modern .action-group {
