@@ -1,4 +1,4 @@
-const { query } = require('./_lib/db');
+const { getSupabase } = require('./_lib/supabase');
 const { verify, getTokenFromReq } = require('./_lib/auth');
 const { readBody } = require('./_lib/parse-body');
 
@@ -20,25 +20,40 @@ module.exports = async (req, res) => {
   if (!auth) return;
 
   const id = req.query && (req.query.no || req.query.id);
+  const supabase = getSupabase();
 
   try {
     if (req.method === 'GET') {
       if (id) {
-        const rows = await query('SELECT * FROM input_barang WHERE no = $1 LIMIT 1', [id]);
-        return res.end(JSON.stringify(rows[0] || null));
+        const { data, error } = await supabase
+          .from('input_barang')
+          .select('*')
+          .eq('no', id)
+          .limit(1);
+        if (error) throw error;
+        return res.end(JSON.stringify((data && data[0]) || null));
       }
-      const rows = await query('SELECT * FROM input_barang ORDER BY no DESC');
-      return res.end(JSON.stringify(rows));
+      const { data, error } = await supabase
+        .from('input_barang')
+        .select('*')
+        .order('no', { ascending: false });
+      if (error) throw error;
+      return res.end(JSON.stringify(data || []));
     }
 
     if (req.method === 'POST') {
       const body = await readBody(req);
       const { kd_alat, kategori, merek, nama_alat, spek, jml } = body;
 
-      await query(
-        'INSERT INTO input_barang (kode_alat, kategori, merek, nama_alat, spesifikasi, jumlah) VALUES ($1, $2, $3, $4, $5, $6)',
-        [kd_alat, kategori, merek, nama_alat, spek, jml]
-      );
+      const { error } = await supabase.from('input_barang').insert({
+        kode_alat: kd_alat,
+        kategori,
+        merek,
+        nama_alat,
+        spesifikasi: spek,
+        jumlah: jml
+      });
+      if (error) throw error;
       return res.end(JSON.stringify({ ok: true }));
     }
 
@@ -50,10 +65,18 @@ module.exports = async (req, res) => {
       const body = await readBody(req);
       const { kd_alat, kategori, merek, nama_alat, spek, jml } = body;
 
-      await query(
-        'UPDATE input_barang SET kode_alat = $1, kategori = $2, merek = $3, nama_alat = $4, spesifikasi = $5, jumlah = $6 WHERE no = $7',
-        [kd_alat, kategori, merek, nama_alat, spek, jml, id]
-      );
+      const { error } = await supabase
+        .from('input_barang')
+        .update({
+          kode_alat: kd_alat,
+          kategori,
+          merek,
+          nama_alat,
+          spesifikasi: spek,
+          jumlah: jml
+        })
+        .eq('no', id);
+      if (error) throw error;
       return res.end(JSON.stringify({ ok: true }));
     }
 
@@ -62,7 +85,8 @@ module.exports = async (req, res) => {
         res.statusCode = 400;
         return res.end(JSON.stringify({ error: 'Missing id' }));
       }
-      await query('DELETE FROM input_barang WHERE no = $1', [id]);
+      const { error } = await supabase.from('input_barang').delete().eq('no', id);
+      if (error) throw error;
       return res.end(JSON.stringify({ ok: true }));
     }
 

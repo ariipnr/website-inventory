@@ -1,4 +1,4 @@
-const { query } = require('./_lib/db');
+const { getSupabase } = require('./_lib/supabase');
 const { verify, getTokenFromReq } = require('./_lib/auth');
 
 function requireAuth(req, res) {
@@ -19,9 +19,11 @@ module.exports = async (req, res) => {
   if (!auth) return;
 
   try {
-    const rows = await query(
-      'SELECT kategori, COUNT(*) AS jumlah FROM input_barang GROUP BY kategori'
-    );
+    const supabase = getSupabase();
+    const { data: barang, error } = await supabase
+      .from('input_barang')
+      .select('kategori');
+    if (error) throw error;
 
     const categories = [
       'Network Device',
@@ -32,7 +34,11 @@ module.exports = async (req, res) => {
       'Lainnya'
     ];
 
-    const map = Object.fromEntries(rows.map((r) => [r.kategori, r.jumlah]));
+    const map = {};
+    (barang || []).forEach((row) => {
+      const key = row.kategori || 'Lainnya';
+      map[key] = (map[key] || 0) + 1;
+    });
     const data = categories.map((c) => ({ kategori: c, jumlah: map[c] || 0 }));
 
     res.end(JSON.stringify({ data }));

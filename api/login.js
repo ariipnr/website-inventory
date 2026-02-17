@@ -1,4 +1,4 @@
-const { query } = require('./_lib/db');
+const { getSupabase } = require('./_lib/supabase');
 const { sign } = require('./_lib/auth');
 const { readBody } = require('./_lib/parse-body');
 
@@ -18,12 +18,20 @@ module.exports = async (req, res) => {
       return res.end(JSON.stringify({ error: 'Username dan password wajib diisi' }));
     }
 
-    const rows = await query(
-      'SELECT username FROM tbl_login WHERE username = $1 AND password = $2 LIMIT 1',
-      [username, password]
-    );
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from('tbl_login')
+      .select('username')
+      .eq('username', username)
+      .eq('password', password)
+      .limit(1);
 
-    if (!rows || rows.length === 0) {
+    if (error) {
+      res.statusCode = 500;
+      return res.end(JSON.stringify({ error: 'Server error' }));
+    }
+
+    if (!data || data.length === 0) {
       res.statusCode = 401;
       return res.end(JSON.stringify({ error: 'Username atau password salah' }));
     }
