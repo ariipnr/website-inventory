@@ -23,6 +23,7 @@
       <nav class="crm-nav">
         <a class="crm-nav__link" href="dashboard.html">Beranda</a>
         <a class="crm-nav__link" href="data_barang.html">Data Barang</a>
+        <a class="crm-nav__link" href="data_peminjam.html">Data Peminjam</a>
         <a class="crm-nav__link active" href="pinjam_alat.html">Peminjaman</a>
         <a class="crm-nav__link" href="chart.html">Laporan</a>
         <a class="crm-nav__link" href="tentang_kami.html">Tentang Kami</a>
@@ -210,6 +211,8 @@
     const borrowerHistoryBody = document.getElementById('borrowerHistoryBody');
 
     let borrowerMap = {};
+    let peminjamMap = {};
+    let peminjamList = [];
     let barangMap = {};
     let pinjamByKode = {};
 
@@ -288,11 +291,12 @@
     }
 
     function renderBorrowerOptions() {
-      const borrowers = Object.values(borrowerMap)
-        .filter((borrower) => borrower.nim)
-        .sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
+      const borrowers = (peminjamList || []).length
+        ? peminjamList
+        : Object.values(borrowerMap).filter((borrower) => borrower.nim);
+      const sorted = borrowers.slice().sort((a, b) => (a.nama || '').localeCompare(b.nama || ''));
       nimSelect.innerHTML = '<option value="">Pilih NIM</option>';
-      borrowers.forEach((borrower) => {
+      sorted.forEach((borrower) => {
         const option = document.createElement('option');
         option.value = borrower.nim || '';
         option.textContent = `${borrower.nim || '-'}${borrower.nama ? ` - ${borrower.nama}` : ''}`;
@@ -341,9 +345,12 @@
 
     nimSelect.addEventListener('change', () => {
       const nim = nimSelect.value;
-      const borrower = borrowerMap[nim];
-      if (borrower && borrower.nama) {
-        namaInput.value = borrower.nama;
+      const peminjam = peminjamMap[nim];
+      const fallback = borrowerMap[nim];
+      if (peminjam && peminjam.nama) {
+        namaInput.value = peminjam.nama;
+      } else if (fallback && fallback.nama) {
+        namaInput.value = fallback.nama;
       } else if (!nim) {
         namaInput.value = '';
       }
@@ -426,10 +433,16 @@
     }
 
     async function loadData() {
-      const [rows, barang] = await Promise.all([
+      const [rows, barang, peminjam] = await Promise.all([
         window.app.apiJson('/api/peminjaman'),
-        window.app.apiJson('/api/barang')
+        window.app.apiJson('/api/barang'),
+        window.app.apiJson('/api/peminjam')
       ]);
+      peminjamList = peminjam || [];
+      peminjamMap = (peminjam || []).reduce((acc, row) => {
+        if (row.nim) acc[row.nim] = row;
+        return acc;
+      }, {});
       barangMap = (barang || []).reduce((acc, row) => {
         acc[row.kode_alat] = row;
         return acc;
