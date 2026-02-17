@@ -101,5 +101,6 @@ window.app = {
   requireAuth,
   apiFetch,
   apiJson,
-  logout
+  logout,
+  getSupabaseClient
 };

@@ -97,9 +97,10 @@
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
       try {
-        const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
-          auth: { persistSession: false, autoRefreshToken: false }
-        });
+        const client = window.app.getSupabaseClient();
+        if (!client) {
+          throw new Error('Supabase config tidak terbaca. Cek supabase-config.js');
+        }
         const { data, error } = await client.auth.signInWithPassword({
           email: payload.email,
           password: payload.password

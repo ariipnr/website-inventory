@@ -1,79 +1,238 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-  <title>Inventaris Barang</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Inventaris</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <div id="container">
-    <section id="menu">
-      <nav class="navbar navbar-light bg-dark">
-        <ul>
-          <li><a href="dashboard.html">Beranda</a></li>
-          <li><a href="data_barang.html">Data Barang</a></li>
-          <li><a href="input_barang.html">Input Barang</a></li>
-          <li><a href="pinjam_alat.html">Pinjam Alat</a></li>
-          <li><a href="tentang_kami.html">Tentang Kami</a></li>
-          <li style="min-width: 400px">&nbsp</li>
-        </ul>
-        <span style="color: white;">Selamat Datang, <span id="username"></span></span>
-        <button type="button" class="btn btn-primary" onclick="window.app.logout()">Logout</button>
+<body class="dashboard-page">
+  <div class="crm-shell">
+    <aside class="crm-sidebar">
+      <div class="crm-brand">
+        <img src="image/LogoIPB.png" alt="Logo IPB">
+        <div>
+          <h2>Inventory CRM</h2>
+          <span>Lab Komputer</span>
+        </div>
+      </div>
+      <nav class="crm-nav">
+        <a class="crm-nav__link active" href="dashboard.html">Beranda</a>
+        <a class="crm-nav__link" href="data_barang.html">Data Barang</a>
+        <a class="crm-nav__link" href="input_barang.html">Input Barang</a>
+        <a class="crm-nav__link" href="pinjam_alat.html">Peminjaman</a>
+        <a class="crm-nav__link" href="chart.html">Laporan</a>
+        <a class="crm-nav__link" href="tentang_kami.html">Tentang Kami</a>
       </nav>
-    </section>
+      <div class="crm-sidebar__footer">
+        <span>Aktif sebagai</span>
+        <strong id="username">-</strong>
+        <button type="button" class="btn btn-outline-light btn-sm" onclick="window.app.logout()">Logout</button>
+      </div>
+    </aside>
+
+    <main class="crm-main">
+      <header class="crm-topbar">
+        <div>
+          <h1>Ringkasan Dashboard</h1>
+          <p>Kelola inventaris, peminjaman, dan laporan lab komputer.</p>
+        </div>
+        <div class="crm-topbar__actions">
+          <a href="input_barang.html" class="btn btn-primary">Tambah Barang</a>
+        </div>
+      </header>
+
+      <section class="crm-stats">
+        <div class="crm-card">
+          <h3>Total Barang</h3>
+          <span class="crm-card__value" id="statTotal">-</span>
+          <small>Data terkini dari inventaris.</small>
+        </div>
+        <div class="crm-card">
+          <h3>Kategori Aktif</h3>
+          <span class="crm-card__value" id="statKategori">-</span>
+          <small>Jumlah kategori barang.</small>
+        </div>
+        <div class="crm-card">
+          <h3>Peminjaman</h3>
+          <span class="crm-card__value" id="statPinjam">-</span>
+          <small>Transaksi peminjaman terbaru.</small>
+        </div>
+      </section>
+
+      <section class="crm-filters">
+        <div class="crm-filter">
+          <label for="filterKategori">Filter Kategori</label>
+          <select id="filterKategori" class="form-control">
+            <option value="">Semua Kategori</option>
+          </select>
+        </div>
+        <div class="crm-filter">
+          <label for="filterStatus">Status Peminjaman</label>
+          <select id="filterStatus" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="Belum Kembali">Belum Kembali</option>
+            <option value="Kembali">Kembali</option>
+          </select>
+        </div>
+        <button class="btn btn-outline-primary crm-filter__apply" id="applyFilter">Terapkan</button>
+        <button class="btn btn-light crm-filter__reset" id="resetFilter">Reset</button>
+      </section>
+
+      <section class="crm-panels">
+        <div class="crm-panel">
+          <h3>Grafik Kategori Barang</h3>
+          <canvas id="kategoriChart" height="160"></canvas>
+        </div>
+        <div class="crm-panel">
+          <h3>Akses Cepat</h3>
+          <div class="crm-quick">
+            <a href="data_barang.html">Lihat Data Barang</a>
+            <a href="input_barang.html">Input Barang Baru</a>
+            <a href="pinjam_alat.html">Kelola Peminjaman</a>
+            <a href="chart.html">Laporan & Grafik</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="crm-panels">
+        <div class="crm-panel crm-panel--accent">
+          <h3>Catatan Harian</h3>
+          <p>Pastikan data peminjaman diperbarui agar laporan tetap akurat.</p>
+          <button class="btn btn-light btn-sm" onclick="window.location.href='pinjam_alat.html'">Cek Peminjaman</button>
+        </div>
+        <div class="crm-panel crm-panel--accent-light">
+          <h3>Ringkasan Filter</h3>
+          <p id="filterSummary">Menampilkan semua data tanpa filter.</p>
+        </div>
+      </section>
+    </main>
   </div>
-
-  <section class="navy" id="section1">
-    <div class="content">
-      <img align="left" src="image/LogoIPB.png" width="400px">
-      <h1 align="right">Inventaris Barang Lab Komputer</h1>
-      <p align="right">Inventaris Barang Lab Komputer Sekolah Vokasi Institut Pertanian Bogor</p>
-    </div>
-  </section>
-
-  <section class="white" id="section2"><br><br>
-    <div class="content">
-      <table align="center">
-        <tr>
-          <td><a href="data_barang.html"><img class="isi" src="image/Lihat.jpg"></a></td>
-          <td><a href="input_barang.html"><img class="isi" src="image/Input.jpg"></a></td>
-        </tr>
-        <tr>
-          <td><a href="pinjam_alat.html"><img class="isi" src="image/Pinjam.jpg"></a></td>
-          <td><a href="chart.html"><img class="isi" src="image/Kembalikan.jpg"></a></td>
-        </tr>
-      </table>
-    </div>
-  </section>
-
-  <section class="navy" id="section3">
-    <div class="content">
-      <h4>CONTACT US</h4>
-      <span>Jl. Kumbang No. 14 Cilibende Bogor, Jawa Barat, Indonesia</span><br>
-      <span>Phone: (0251) 8329101</span><br>
-      <span>E-mail: sv@apps.ipb.ac.id.</span><br>
-    </div>
-    <div class="clear"></div>
-  </section>
-
-  <section class="gray" id="section4">
-    <div class="content">
-      <p>Copyright © 2019 - Developed by Kelompok 6</p>
-    </div>
-  </section>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="app.js"></script>
-  <script src="script.js"></script>
   <script>
     window.app.requireAuth();
+
+    let rawBarang = [];
+    let rawPinjam = [];
+    let chart;
+
+    function setStats(barang, pinjam) {
+      const kategoriSet = new Set((barang || []).map((row) => row.kategori).filter(Boolean));
+      document.getElementById('statTotal').textContent = (barang || []).length;
+      document.getElementById('statKategori').textContent = kategoriSet.size;
+      document.getElementById('statPinjam').textContent = (pinjam || []).length;
+    }
+
+    function buildKategoriOptions(barang) {
+      const select = document.getElementById('filterKategori');
+      const categories = Array.from(new Set((barang || []).map((row) => row.kategori).filter(Boolean)));
+      categories.sort();
+      categories.forEach((c) => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
+        select.appendChild(opt);
+      });
+    }
+
+    function updateChart(filteredBarang) {
+      const map = {};
+      (filteredBarang || []).forEach((row) => {
+        const key = row.kategori || 'Lainnya';
+        map[key] = (map[key] || 0) + 1;
+      });
+      const labels = Object.keys(map);
+      const values = Object.values(map);
+
+      if (!chart) {
+        const ctx = document.getElementById('kategoriChart').getContext('2d');
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [
+              {
+                label: 'Jumlah Barang',
+                data: values,
+                backgroundColor: 'rgba(13, 59, 120, 0.7)',
+                borderRadius: 8
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { display: false }
+            },
+            scales: {
+              x: { grid: { display: false } },
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      } else {
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = values;
+        chart.update();
+      }
+    }
+
+    function applyFilters() {
+      const kategori = document.getElementById('filterKategori').value;
+      const status = document.getElementById('filterStatus').value;
+
+      const filteredBarang = kategori
+        ? rawBarang.filter((row) => row.kategori === kategori)
+        : rawBarang.slice();
+      const filteredPinjam = status
+        ? rawPinjam.filter((row) => row.status === status)
+        : rawPinjam.slice();
+
+      setStats(filteredBarang, filteredPinjam);
+      updateChart(filteredBarang);
+
+      const summary = [];
+      if (kategori) summary.push(`Kategori: ${kategori}`);
+      if (status) summary.push(`Status: ${status}`);
+      document.getElementById('filterSummary').textContent =
+        summary.length ? `Filter aktif: ${summary.join(', ')}` : 'Menampilkan semua data tanpa filter.';
+    }
+
+    document.getElementById('applyFilter').addEventListener('click', applyFilters);
+    document.getElementById('resetFilter').addEventListener('click', () => {
+      document.getElementById('filterKategori').value = '';
+      document.getElementById('filterStatus').value = '';
+      applyFilters();
+    });
+
     (async () => {
       try {
         const data = await window.app.apiJson('/api/me');
         document.getElementById('username').textContent = data.username || '';
       } catch {
         document.getElementById('username').textContent = '';
+      }
+    })();
+
+    (async () => {
+      try {
+        rawBarang = await window.app.apiJson('/api/barang');
+        rawPinjam = await window.app.apiJson('/api/peminjaman');
+        buildKategoriOptions(rawBarang);
+        setStats(rawBarang, rawPinjam);
+        updateChart(rawBarang);
+      } catch {
+        document.getElementById('statTotal').textContent = '-';
+        document.getElementById('statKategori').textContent = '-';
+        document.getElementById('statPinjam').textContent = '-';
       }
     })();
   </script>
