@@ -1,22 +1,11 @@
 const { getSupabase } = require('./_lib/supabase');
-const { verify, getTokenFromReq } = require('./_lib/auth');
+const { requireAuth } = require('./_lib/auth');
 const { readBody } = require('./_lib/parse-body');
-
-function requireAuth(req, res) {
-  const token = getTokenFromReq(req);
-  const payload = verify(token, process.env.AUTH_SECRET);
-  if (!payload) {
-    res.statusCode = 401;
-    res.end(JSON.stringify({ error: 'Unauthorized' }));
-    return null;
-  }
-  return payload;
-}
 
 module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/json');
 
-  const auth = requireAuth(req, res);
+  const auth = await requireAuth(req, res);
   if (!auth) return;
 
   const id = req.query && (req.query.no || req.query.id);

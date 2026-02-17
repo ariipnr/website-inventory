@@ -10,13 +10,39 @@ function clearToken() {
   window.localStorage.removeItem('token');
 }
 
+let supabaseClient;
+
+function getSupabaseClient() {
+  if (supabaseClient) return supabaseClient;
+  if (!window.supabase) return null;
+  if (!window.SUPABASE_URL || !window.SUPABASE_ANON_KEY) return null;
+  supabaseClient = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+  return supabaseClient;
+}
+
+async function ensureToken() {
+  let token = getToken();
+  if (!token) {
+    const client = getSupabaseClient();
+    if (client) {
+      const { data } = await client.auth.getSession();
+      token = data && data.session ? data.session.access_token : null;
+      if (token) setToken(token);
+    }
+  }
+  return token;
+}
+
 function getQueryParam(name) {
   const params = new URLSearchParams(window.location.search);
   return params.get(name);
 }
 
-function requireAuth() {
-  if (!getToken()) {
+async function requireAuth() {
+  const token = await ensureToken();
+  if (!token) {
     window.location.href = 'login.html?pesan=belum_login';
   }
 }
@@ -27,7 +53,7 @@ async function apiFetch(path, options = {}) {
     headers['Content-Type'] = 'application/json';
   }
 
-  const token = getToken();
+  const token = await ensureToken();
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -60,6 +86,10 @@ async function apiJson(path, options = {}) {
 
 function logout() {
   clearToken();
+  const client = getSupabaseClient();
+  if (client) {
+    client.auth.signOut();
+  }
   window.location.href = 'login.html?pesan=logout';
 }
 

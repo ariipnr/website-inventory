@@ -40,8 +40,8 @@
       <form id="loginForm" class="login-form">
         <div id="alertBox"></div>
         <div class="form-group">
-          <label for="username">User</label>
-          <input id="username" type="text" name="username" class="form-control" placeholder="Username" autocomplete="username" required>
+          <label for="email">Email</label>
+          <input id="email" type="email" name="email" class="form-control" placeholder="email@ipb.ac.id" autocomplete="email" required>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -73,6 +73,8 @@
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
   <script>
     if (window.app.getToken()) {
@@ -95,11 +97,17 @@
       const formData = new FormData(e.target);
       const payload = Object.fromEntries(formData.entries());
       try {
-        const data = await window.app.apiJson('/api/login', {
-          method: 'POST',
-          body: JSON.stringify(payload)
+        const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY, {
+          auth: { persistSession: false, autoRefreshToken: false }
         });
-        window.app.setToken(data.token);
+        const { data, error } = await client.auth.signInWithPassword({
+          email: payload.email,
+          password: payload.password
+        });
+        if (error) {
+          throw new Error(error.message || 'Login gagal');
+        }
+        window.app.setToken(data.session.access_token);
         window.location.href = 'dashboard.html';
       } catch (err) {
         alertBox.innerHTML = `<div class="alert alert-danger" role="alert">${err.message}</div>`;
