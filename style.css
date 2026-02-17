@@ -79,6 +79,11 @@ img {
 	filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.25));
 }
 
+.ipb-topbar__logo-link {
+	display: inline-flex;
+	align-items: center;
+}
+
 .ipb-topbar__actions .btn {
 	border-radius: 999px;
 	padding: 6px 18px;
@@ -383,6 +388,16 @@ img {
 	display: flex;
 	align-items: center;
 	gap: 12px;
+}
+
+.crm-brand__link {
+	text-decoration: none;
+	color: var(--neutral-0);
+}
+
+.crm-brand__link:hover {
+	text-decoration: none;
+	color: var(--neutral-0);
 }
 
 .crm-brand img {
