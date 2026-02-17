@@ -477,10 +477,13 @@
         info: true,
         dom: 'Bfrtp',
         buttons: [
-          'excelHtml5',
+          {
+            extend: 'excelHtml5',
+            text: '<i class="fa-regular fa-file-excel"></i> Excel'
+          },
           {
             extend: 'pdfHtml5',
-            text: 'Unduh PDF',
+            text: '<i class="fa-regular fa-file-pdf"></i> Unduh PDF',
             orientation: 'portrait',
             pageSize: 'A4',
             customize: function (doc) {
