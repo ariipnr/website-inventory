@@ -46,6 +46,10 @@ body.dashboard-page {
 	margin: 0;
 }
 
+body.modal-open {
+	overflow: hidden;
+}
+
 img {
 	max-width: 100%;
 	display: block;
@@ -549,6 +553,58 @@ img {
 .crm-quick a:hover {
 	background: rgba(13, 59, 120, 0.16);
 	text-decoration: none;
+}
+
+.crm-modal {
+	position: fixed;
+	inset: 0;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	z-index: 50;
+}
+
+.crm-modal[aria-hidden="false"] {
+	display: flex;
+}
+
+.crm-modal__backdrop {
+	position: absolute;
+	inset: 0;
+	background: rgba(8, 18, 37, 0.55);
+	backdrop-filter: blur(2px);
+}
+
+.crm-modal__content {
+	position: relative;
+	background: var(--neutral-0);
+	border-radius: 18px;
+	box-shadow: var(--shadow-lg);
+	padding: 24px;
+	width: min(540px, 90vw);
+	z-index: 1;
+}
+
+.crm-modal__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 16px;
+}
+
+.crm-modal__close {
+	background: transparent;
+	border: none;
+	font-size: 1.8rem;
+	line-height: 1;
+	color: var(--ipb-blue-deep);
+}
+
+.crm-modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 12px;
 }
 
 @media (max-width: 960px) {

@@ -23,7 +23,7 @@
       <nav class="crm-nav">
         <a class="crm-nav__link active" href="dashboard.html">Beranda</a>
         <a class="crm-nav__link" href="data_barang.html">Data Barang</a>
-        <a class="crm-nav__link" href="input_barang.html">Input Barang</a>
+        <a class="crm-nav__link" href="data_barang.html">Input Barang</a>
         <a class="crm-nav__link" href="pinjam_alat.html">Peminjaman</a>
         <a class="crm-nav__link" href="chart.html">Laporan</a>
         <a class="crm-nav__link" href="tentang_kami.html">Tentang Kami</a>
@@ -42,7 +42,7 @@
           <p>Kelola inventaris, peminjaman, dan laporan lab komputer.</p>
         </div>
         <div class="crm-topbar__actions">
-          <a href="input_barang.html" class="btn btn-primary">Tambah Barang</a>
+          <button class="btn btn-primary" id="openInputModal">Tambah Barang</button>
         </div>
       </header>
 
@@ -92,7 +92,7 @@
           <h3>Akses Cepat</h3>
           <div class="crm-quick">
             <a href="data_barang.html">Lihat Data Barang</a>
-            <a href="input_barang.html">Input Barang Baru</a>
+            <a href="#" id="quickInputBarang">Input Barang Baru</a>
             <a href="pinjam_alat.html">Kelola Peminjaman</a>
             <a href="chart.html">Laporan & Grafik</a>
           </div>
@@ -113,6 +113,54 @@
     </main>
   </div>
 
+  <div class="crm-modal" id="inputModal" aria-hidden="true">
+    <div class="crm-modal__backdrop" data-close></div>
+    <div class="crm-modal__content" role="dialog" aria-modal="true">
+      <div class="crm-modal__header">
+        <h3>Input Barang Baru</h3>
+        <button class="crm-modal__close" type="button" data-close>&times;</button>
+      </div>
+      <div id="modalAlert"></div>
+      <form id="modalInputForm">
+        <div class="form-group">
+          <label>Kode Alat</label>
+          <input type="text" name="kd_alat" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select name="kategori" class="form-control" required>
+            <option value="Network Device">Network Device</option>
+            <option value="PC">PC</option>
+            <option value="Sparepart">Sparepart</option>
+            <option value="Printer">Printer</option>
+            <option value="Alat">Alat</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Merek</label>
+          <input type="text" name="merek" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Nama Alat</label>
+          <input type="text" name="nama_alat" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Spesifikasi</label>
+          <textarea name="spek" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Jumlah</label>
+          <input type="number" name="jml" class="form-control" min="0" required>
+        </div>
+        <div class="crm-modal__actions">
+          <button type="button" class="btn btn-light" data-close>Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -123,6 +171,18 @@
     let rawBarang = [];
     let rawPinjam = [];
     let chart;
+    const inputModal = document.getElementById('inputModal');
+    const modalAlert = document.getElementById('modalAlert');
+
+    function openModal() {
+      inputModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeModal() {
+      inputModal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    }
 
     function setStats(barang, pinjam) {
       const kategoriSet = new Set((barang || []).map((row) => row.kategori).filter(Boolean));
@@ -211,6 +271,39 @@
       document.getElementById('filterKategori').value = '';
       document.getElementById('filterStatus').value = '';
       applyFilters();
+    });
+
+    document.getElementById('openInputModal').addEventListener('click', openModal);
+    document.getElementById('quickInputBarang').addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal();
+    });
+    inputModal.addEventListener('click', (e) => {
+      if (e.target.hasAttribute('data-close')) {
+        closeModal();
+      }
+    });
+
+    document.getElementById('modalInputForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      modalAlert.innerHTML = '';
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      try {
+        await window.app.apiJson('/api/barang', {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        closeModal();
+        e.target.reset();
+        rawBarang = await window.app.apiJson('/api/barang');
+        rawPinjam = await window.app.apiJson('/api/peminjaman');
+        buildKategoriOptions(rawBarang);
+        setStats(rawBarang, rawPinjam);
+        updateChart(rawBarang);
+      } catch (err) {
+        modalAlert.innerHTML = `<div class="alert alert-danger" role="alert">${err.message}</div>`;
+      }
     });
 
     (async () => {
