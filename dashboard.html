@@ -23,7 +23,6 @@
       <nav class="crm-nav">
         <a class="crm-nav__link active" href="dashboard.html">Beranda</a>
         <a class="crm-nav__link" href="data_barang.html">Data Barang</a>
-        <a class="crm-nav__link" href="data_barang.html">Input Barang</a>
         <a class="crm-nav__link" href="pinjam_alat.html">Peminjaman</a>
         <a class="crm-nav__link" href="chart.html">Laporan</a>
         <a class="crm-nav__link" href="tentang_kami.html">Tentang Kami</a>
@@ -180,8 +179,12 @@
     }
 
     function closeModal() {
-      inputModal.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('modal-open');
+      inputModal.classList.add('is-closing');
+      setTimeout(() => {
+        inputModal.setAttribute('aria-hidden', 'true');
+        inputModal.classList.remove('is-closing');
+        document.body.classList.remove('modal-open');
+      }, 180);
     }
 
     function setStats(barang, pinjam) {

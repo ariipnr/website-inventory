@@ -23,7 +23,6 @@
       <nav class="crm-nav">
         <a class="crm-nav__link" href="dashboard.html">Beranda</a>
         <a class="crm-nav__link active" href="data_barang.html">Data Barang</a>
-        <a class="crm-nav__link" href="input_barang.html">Input Barang</a>
         <a class="crm-nav__link" href="pinjam_alat.html">Peminjaman</a>
         <a class="crm-nav__link" href="chart.html">Laporan</a>
         <a class="crm-nav__link" href="tentang_kami.html">Tentang Kami</a>
@@ -42,7 +41,7 @@
           <p>Kelola daftar inventaris barang lab komputer.</p>
         </div>
         <div class="crm-topbar__actions">
-          <a href="input_barang.html" class="btn btn-primary">Tambah Barang</a>
+          <button class="btn btn-primary" id="openAddBarang">Tambah Barang</button>
         </div>
       </header>
 
@@ -65,6 +64,55 @@
     </main>
   </div>
 
+  <div class="crm-modal" id="barangModal" aria-hidden="true">
+    <div class="crm-modal__backdrop" data-close></div>
+    <div class="crm-modal__content" role="dialog" aria-modal="true">
+      <div class="crm-modal__header">
+        <h3 id="barangModalTitle">Input Barang</h3>
+        <button class="crm-modal__close" type="button" data-close>&times;</button>
+      </div>
+      <div id="barangModalAlert"></div>
+      <form id="barangModalForm">
+        <input type="hidden" name="no" id="modalNo">
+        <div class="form-group">
+          <label>Kode Alat</label>
+          <input type="text" name="kd_alat" id="modalKode" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Kategori</label>
+          <select name="kategori" id="modalKategori" class="form-control" required>
+            <option value="Network Device">Network Device</option>
+            <option value="PC">PC</option>
+            <option value="Sparepart">Sparepart</option>
+            <option value="Printer">Printer</option>
+            <option value="Alat">Alat</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Merek</label>
+          <input type="text" name="merek" id="modalMerek" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Nama Alat</label>
+          <input type="text" name="nama_alat" id="modalNama" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label>Spesifikasi</label>
+          <textarea name="spek" id="modalSpek" class="form-control" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Jumlah</label>
+          <input type="number" name="jml" id="modalJumlah" class="form-control" min="0" required>
+        </div>
+        <div class="crm-modal__actions">
+          <button type="button" class="btn btn-light" data-close>Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
@@ -85,6 +133,35 @@
       }
     })();
 
+    const barangModal = document.getElementById('barangModal');
+    const barangModalAlert = document.getElementById('barangModalAlert');
+    const barangModalTitle = document.getElementById('barangModalTitle');
+    const barangModalForm = document.getElementById('barangModalForm');
+    const modalNo = document.getElementById('modalNo');
+
+    function openBarangModal(mode, data = {}) {
+      barangModalAlert.innerHTML = '';
+      barangModalTitle.textContent = mode === 'edit' ? 'Edit Barang' : 'Input Barang';
+      modalNo.value = data.no || '';
+      document.getElementById('modalKode').value = data.kode_alat || '';
+      document.getElementById('modalKategori').value = data.kategori || 'Network Device';
+      document.getElementById('modalMerek').value = data.merek || '';
+      document.getElementById('modalNama').value = data.nama_alat || '';
+      document.getElementById('modalSpek').value = data.spesifikasi || '';
+      document.getElementById('modalJumlah').value = data.jumlah || '';
+      barangModal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+    }
+
+    function closeBarangModal() {
+      barangModal.classList.add('is-closing');
+      setTimeout(() => {
+        barangModal.setAttribute('aria-hidden', 'true');
+        barangModal.classList.remove('is-closing');
+        document.body.classList.remove('modal-open');
+      }, 180);
+    }
+
     function renderRows(rows) {
       const body = document.getElementById('barangBody');
       body.innerHTML = '';
@@ -98,7 +175,7 @@
           <td align="left">${row.spesifikasi || ''}</td>
           <td align="left">${row.jumlah || ''}</td>
           <td>
-            <a href="edit_barang.html?no=${row.no}">Edit</a> |
+            <a href="#" data-id="${row.no}" class="edit-link">Edit</a> |
             <a href="#" data-id="${row.no}" class="delete-link">Delete</a> |
             <a href="generate_barcode.html?no=${row.no}">Generate</a>
           </td>
@@ -135,7 +212,27 @@
       });
     }
 
+    document.getElementById('openAddBarang').addEventListener('click', () => {
+      openBarangModal('add');
+    });
+
+    barangModal.addEventListener('click', (e) => {
+      if (e.target.hasAttribute('data-close')) {
+        closeBarangModal();
+      }
+    });
+
     document.addEventListener('click', async (e) => {
+      if (e.target.classList.contains('edit-link')) {
+        e.preventDefault();
+        const id = e.target.getAttribute('data-id');
+        try {
+          const data = await window.app.apiJson(`/api/barang?id=${id}`);
+          openBarangModal('edit', data || {});
+        } catch (err) {
+          alert(err.message);
+        }
+      }
       if (e.target.classList.contains('delete-link')) {
         e.preventDefault();
         const id = e.target.getAttribute('data-id');
@@ -146,6 +243,31 @@
         } catch (err) {
           alert(err.message);
         }
+      }
+    });
+
+    barangModalForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      barangModalAlert.innerHTML = '';
+      const formData = new FormData(e.target);
+      const payload = Object.fromEntries(formData.entries());
+      const id = modalNo.value;
+      try {
+        if (id) {
+          await window.app.apiJson(`/api/barang?id=${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+          });
+        } else {
+          await window.app.apiJson('/api/barang', {
+            method: 'POST',
+            body: JSON.stringify(payload)
+          });
+        }
+        closeBarangModal();
+        window.location.reload();
+      } catch (err) {
+        barangModalAlert.innerHTML = `<div class="alert alert-danger" role="alert">${err.message}</div>`;
       }
     });
 
