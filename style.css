@@ -475,6 +475,41 @@ img {
 	color: rgba(23, 32, 55, 0.65);
 }
 
+.crm-topbar__actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 16px;
+	flex-wrap: wrap;
+}
+
+.crm-user {
+	font-size: 0.9rem;
+	color: #1f2937;
+	background: rgba(255, 255, 255, 0.7);
+	border: 1px solid rgba(13, 59, 120, 0.12);
+	border-radius: 14px;
+	padding: 8px 12px;
+	display: flex;
+	align-items: center;
+}
+
+.crm-user strong {
+	font-weight: 600;
+}
+
+.crm-user__logout {
+	border: 0;
+	background: transparent;
+	color: #0f5aa3;
+	font-weight: 600;
+	padding: 0;
+}
+
+.crm-user__logout:hover {
+	text-decoration: underline;
+}
+
 .crm-stats {
 	display: grid;
 	grid-template-columns: repeat(3, minmax(0, 1fr));
