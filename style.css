@@ -721,6 +721,9 @@ img {
 	border-bottom: 1px solid rgba(13, 59, 120, 0.12);
 	text-align: left;
 	vertical-align: middle;
+	position: sticky;
+	top: 0;
+	z-index: 2;
 }
 
 .table-modern tbody tr:hover {
